@@ -1,4 +1,7 @@
 :root {
+  --background-white: #f2ede7;
+  --background-black: #483a2e;
+
   --vt-c-white: #f8f8f9;
   --vt-c-black: #5d626a;
 
@@ -21,6 +24,8 @@
 }
 
 :root {
+  --base: white;
+  --page-background: var(--background-white);
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
@@ -36,6 +41,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --base: black;
+    --page-background: var(--background-black);
     --color-background: var(--vt-c-black);
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
