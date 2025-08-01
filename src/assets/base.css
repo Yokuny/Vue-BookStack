@@ -1,6 +1,8 @@
 :root {
   --background-white: #f2ede7;
   --background-black: #483a2e;
+  --background-white-hover: #e6e1d9;
+  --background-black-hover: #5d626a;
 
   --vt-c-white: #f8f8f9;
   --vt-c-black: #5d626a;
@@ -26,6 +28,7 @@
 :root {
   --base: white;
   --page-background: var(--background-white);
+  --page-background-hover: var(--background-white-hover);
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
@@ -39,7 +42,9 @@
   --section-gap: 160px;
 }
 
+/*
 @media (prefers-color-scheme: dark) {
+  https://color-register.org/color/483A2E
   :root {
     --base: black;
     --page-background: var(--background-black);
@@ -54,6 +59,7 @@
     --color-text: var(--vt-c-text-dark-2);
   }
 }
+*/
 
 *,
 *::before,

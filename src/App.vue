@@ -11,8 +11,12 @@ const showAccessPage = computed(() => {
   return route.name === 'access'
 })
 
-const setMode = (mode: string) => {
-  currentMode.value = mode
+const toggleSignMode = () => {
+  if (currentMode.value === 'signin') {
+    currentMode.value = 'signup'
+  } else {
+    currentMode.value = 'signin'
+  }
 }
 
 const handleSignin = () => {
@@ -30,78 +34,126 @@ const handleGuest = () => {
 </script>
 
 <template id="app">
-  <header v-if="showAccessPage" class="header">
-    <div class="template-header">
+  <div v-if="showAccessPage" class="card">
+    <header class="template-header">
       <p class="logo">Book Stack</p>
-      <div style="display: flex; gap: 1rem">
-        <button @click="setMode('signin')" class="nav-link">Entrar</button>
-        <button @click="setMode('signup')" class="nav-link">Novo usuário</button>
-        <button @click="handleGuest" class="nav-link">Visitante</button>
+      <div class="navigation-controls">
+        <!-- Switch para alternar entre Signin e Signup -->
+        <div class="switch-container">
+          <div class="switch" @click="toggleSignMode">
+            <span class="switch-option left" :class="{ active: currentMode === 'signin' }"
+              >Entrar</span
+            >
+            <span class="switch-option right" :class="{ active: currentMode === 'signup' }"
+              >Registrar</span
+            >
+            <div class="switch-slider" :class="{ 'slide-right': currentMode === 'signup' }"></div>
+          </div>
+        </div>
+
+        <!-- Botão separado para visitante -->
+        <button v-if="currentMode !== 'guest'" @click="handleGuest" class="button-system">
+          Visitante
+        </button>
+      </div>
+    </header>
+
+    <div v-if="currentMode === 'signin'" class="form">
+      <div class="form-group form-group-size">
+        <h3 class="form-title">Entrar</h3>
+        <div class="input-group input-size">
+          <label>Nome:</label>
+          <input v-model="signinData.name" type="text" />
+        </div>
+        <div class="input-group input-size">
+          <label>Senha:</label>
+          <input v-model="signinData.password" type="password" />
+        </div>
+        <button class="button-primary input-size" @click="handleSignin">Entrar</button>
       </div>
     </div>
 
-    <div v-if="currentMode === 'signin'">
-      <h3>Entrar</h3>
-      <div>
-        <label>Nome:</label>
-        <input v-model="signinData.name" type="text" />
+    <div v-if="currentMode === 'signup'" class="form">
+      <div class="form-group form-group-size">
+        <h3 class="form-title">Criar conta</h3>
+        <div class="input-group input-size">
+          <label>Nome:</label>
+          <input v-model="signupData.name" type="text" />
+        </div>
+        <div class="input-group input-size">
+          <label>Senha:</label>
+          <input v-model="signupData.password" type="password" />
+        </div>
+        <div class="input-group input-size">
+          <label>Confirmar Senha:</label>
+          <input v-model="signupData.confirmPassword" type="password" />
+        </div>
+        <button class="button-primary input-size" @click="handleSignup">Criar Conta</button>
       </div>
-      <div>
-        <label>Senha:</label>
-        <input v-model="signinData.password" type="password" />
-      </div>
-      <button @click="handleSignin">Entrar</button>
     </div>
 
-    <div v-if="currentMode === 'signup'">
-      <h3>Criar Conta</h3>
+    <div v-if="currentMode === 'guest'" class="form">
       <div>
-        <label>Nome:</label>
-        <input v-model="signupData.name" type="text" />
+        <h3>Carregando...</h3>
+        <p>Entrando como visitante...</p>
       </div>
-      <div>
-        <label>Senha:</label>
-        <input v-model="signupData.password" type="password" />
-      </div>
-      <div>
-        <label>Confirmar Senha:</label>
-        <input v-model="signupData.confirmPassword" type="password" />
-      </div>
-      <button @click="handleSignup">Criar Conta</button>
     </div>
 
-    <div v-if="currentMode === 'guest'">
-      <h3>Carregando...</h3>
-      <p>Entrando como visitante...</p>
-    </div>
-  </header>
+    <footer class="template-footer" style="padding: 2rem">
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis ipsum, hic quod eos animi
+        pariatur sapiente repellendus aliquid. Amet nisi, dolor architecto odit ut provident iste
+        deserunt obcaecati ad quas!
+      </p>
+    </footer>
+  </div>
 
-  <main v-else class="main">
+  <main v-else class="card">
     <RouterView />
   </main>
 </template>
 
 <style>
-.header,
-.main {
-  background-color: var(--base);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--color-border);
-}
-
 .template-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem;
   font-size: 2rem;
 }
 
-.logo {
-  color: var(--vt-c-text-light-2);
-  font-family: 'Luckiest Guy', cursive;
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  width: 100%;
+  min-height: 50vh;
+  height: 100%;
+  padding: 1rem;
+}
+
+.form-title {
+  font-family: 'Whisper', cursive;
   font-weight: 400;
   font-style: normal;
+  font-size: 4rem;
+}
+
+.form-group-size {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  max-width: 400px;
+  width: 100%;
+}
+
+.input-size {
+  width: 100%;
+}
+
+.navigation-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 </style>
