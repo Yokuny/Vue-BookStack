@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router'
 import { computed, ref } from 'vue'
+import { Card, Button, Switch } from './components'
 
 const route = useRoute()
 const currentMode = ref('signin')
@@ -11,13 +12,12 @@ const showAccessPage = computed(() => {
   return route.name === 'access'
 })
 
-const toggleSignMode = () => {
-  if (currentMode.value === 'signin') {
-    currentMode.value = 'signup'
-  } else {
-    currentMode.value = 'signin'
-  }
-}
+const isSignup = computed({
+  get: () => currentMode.value === 'signup',
+  set: (value: boolean) => {
+    currentMode.value = value ? 'signup' : 'signin'
+  },
+})
 
 const handleSignin = () => {
   console.log('Signin:', signinData.value)
@@ -34,27 +34,15 @@ const handleGuest = () => {
 </script>
 
 <template id="app">
-  <div v-if="showAccessPage" class="card">
+  <Card v-if="showAccessPage">
     <header class="template-header">
       <p class="logo">Book Stack</p>
       <div class="navigation-controls">
-        <!-- Switch para alternar entre Signin e Signup -->
-        <div class="switch-container">
-          <div class="switch" @click="toggleSignMode">
-            <span class="switch-option left" :class="{ active: currentMode === 'signin' }"
-              >Entrar</span
-            >
-            <span class="switch-option right" :class="{ active: currentMode === 'signup' }"
-              >Registrar</span
-            >
-            <div class="switch-slider" :class="{ 'slide-right': currentMode === 'signup' }"></div>
-          </div>
-        </div>
+        <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
 
-        <!-- Botão separado para visitante -->
-        <button v-if="currentMode !== 'guest'" @click="handleGuest" class="button-system">
+        <Button v-if="currentMode !== 'guest'" @click="handleGuest" variant="system">
           Visitante
-        </button>
+        </Button>
       </div>
     </header>
 
@@ -69,7 +57,7 @@ const handleGuest = () => {
           <label>Senha:</label>
           <input v-model="signinData.password" type="password" />
         </div>
-        <button class="button-primary input-size" @click="handleSignin">Entrar</button>
+        <Button class="input-size" @click="handleSignin" variant="primary">Entrar</Button>
       </div>
     </div>
 
@@ -88,7 +76,7 @@ const handleGuest = () => {
           <label>Confirmar Senha:</label>
           <input v-model="signupData.confirmPassword" type="password" />
         </div>
-        <button class="button-primary input-size" @click="handleSignup">Criar Conta</button>
+        <Button class="input-size" @click="handleSignup" variant="primary">Criar Conta</Button>
       </div>
     </div>
 
@@ -106,11 +94,11 @@ const handleGuest = () => {
         deserunt obcaecati ad quas!
       </p>
     </footer>
-  </div>
+  </Card>
 
-  <main v-else class="card">
+  <Card v-else>
     <RouterView />
-  </main>
+  </Card>
 </template>
 
 <style>
