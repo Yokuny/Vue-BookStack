@@ -4,15 +4,15 @@ import { computed } from 'vue'
 
 const route = useRoute()
 
-const showLogIn = computed(() => {
-  return route.name !== 'login'
+const showAccessPage = computed(() => {
+  return route.name === 'access'
 })
 
 </script>
 
 <template>
   <div id="app">
-    <header v-if="showLogIn" class="header">
+    <header v-if="showAccessPage" class="header">
           <RouterLink to="/signin" class="nav-link">Entrar</RouterLink>
           <RouterLink to="/signup" class="nav-link">Novo usuário</RouterLink>
           <RouterLink to="/guest" class="nav-link">Visitante</RouterLink>
@@ -25,5 +25,4 @@ const showLogIn = computed(() => {
 </template>
 
 <style>
-
 </style>

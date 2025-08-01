@@ -6,7 +6,7 @@ router.push({ name: 'access' })
 </script>
 
 <template>
-  <div></div>
+  <div>AcessView</div>
 </template>
 
 <style scoped></style>
