@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AppView from '../views/AppView.vue'
 import AddBookView from '../views/AddBookView.vue'
+import BookDetailView from '../views/BookDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,8 +18,18 @@ const router = createRouter({
     },
     {
       path: '/newbook',
+      name: 'newBook',
+      component: AddBookView,
+    },
+    {
+      path: '/add-book',
       name: 'addBook',
       component: AddBookView,
+    },
+    {
+      path: '/book/:isbn',
+      name: 'bookDetail',
+      component: BookDetailView,
     },
   ],
 })

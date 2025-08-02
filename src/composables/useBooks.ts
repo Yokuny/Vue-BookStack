@@ -4,8 +4,11 @@ import { useAuth } from './useAuth'
 export interface Book {
   isbn: string
   name: string
+  description?: string
   author: string
   stock: number
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface BooksPagination {

@@ -102,7 +102,12 @@ const getVisiblePages = () => {
         </div>
 
         <div class="books-grid">
-          <div v-for="book in books" :key="book.isbn" class="book-item">
+          <div
+            v-for="book in books"
+            :key="book.isbn"
+            class="book-item"
+            @click="() => router.push(`/book/${book.isbn}`)"
+          >
             <div class="book-info">
               <h4 class="book-name">{{ book.name }}</h4>
               <p class="book-author">por {{ book.author }}</p>
@@ -110,6 +115,9 @@ const getVisiblePages = () => {
                 <span class="book-isbn">ISBN: {{ book.isbn }}</span>
                 <span class="book-stock">Estoque: {{ book.stock }}</span>
               </p>
+            </div>
+            <div class="click-indicator">
+              Clique para ver detalhes →
             </div>
           </div>
         </div>
@@ -274,11 +282,18 @@ const getVisiblePages = () => {
   padding: 1.5rem;
   margin-bottom: 1rem;
   transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .book-item:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
+}
+
+.book-item:hover .click-indicator {
+  opacity: 1;
 }
 
 .book-name {
@@ -306,6 +321,21 @@ const getVisiblePages = () => {
 .book-isbn,
 .book-stock {
   font-weight: 500;
+}
+
+.click-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .pagination {

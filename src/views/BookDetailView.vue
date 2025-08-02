@@ -1,0 +1,327 @@
+<script setup lang="ts">
+import { onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useBookDetail } from '../composables/useBookDetail'
+import { Button, Card } from '../components'
+
+const route = useRoute()
+const router = useRouter()
+const { book, isLoading, error, fetchBookByIsbn } = useBookDetail()
+
+const loadBook = async () => {
+  const isbn = route.params.isbn as string
+  if (isbn) {
+    await fetchBookByIsbn(isbn)
+  }
+}
+
+const goBack = () => {
+  router.push('/app')
+}
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+onMounted(() => {
+  loadBook()
+})
+
+watch(
+  () => route.params.isbn,
+  () => {
+    loadBook()
+  },
+)
+</script>
+
+<template>
+  <Card>
+    <template #header>
+      <div class="header-content">
+        <Button @click="goBack" variant="outline" class="back-btn"> ← Voltar </Button>
+        <p class="logo">Book Stack</p>
+        <div></div>
+      </div>
+    </template>
+
+    <div class="book-detail-section">
+      <div v-if="error" class="message error-message">
+        {{ error }}
+        <Button @click="loadBook" variant="primary" class="retry-btn"> Tentar Novamente </Button>
+      </div>
+
+      <div v-if="isLoading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando detalhes do livro...</p>
+      </div>
+
+      <div v-else-if="book" class="book-detail">
+        <div class="book-header">
+          <h1 class="book-title">{{ book.name }}</h1>
+          <p class="book-author">por {{ book.author }}</p>
+          <div v-if="book.description" class="book-description">
+            <p>{{ book.description }}</p>
+          </div>
+        </div>
+
+        <div class="book-info-grid">
+          <div class="info-card">
+            <h3 class="info-label">ISBN</h3>
+            <p class="info-value">{{ book.isbn }}</p>
+          </div>
+
+          <div class="info-card">
+            <h3 class="info-label">Estoque</h3>
+            <p class="info-value stock-value" :class="{ 'low-stock': book.stock < 5 }">
+              {{ book.stock }} {{ book.stock === 1 ? 'unidade' : 'unidades' }}
+            </p>
+          </div>
+
+          <div v-if="book.createdAt" class="info-card">
+            <h3 class="info-label">Data de Cadastro</h3>
+            <p class="info-value date-value">{{ formatDate(book.createdAt) }}</p>
+          </div>
+
+          <div v-if="book.updatedAt && book.updatedAt !== book.createdAt" class="info-card">
+            <h3 class="info-label">Última Atualização</h3>
+            <p class="info-value date-value">{{ formatDate(book.updatedAt) }}</p>
+          </div>
+        </div>
+
+        <div class="book-actions">
+          <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
+        </div>
+      </div>
+
+      <div v-else-if="!isLoading && !error" class="not-found">
+        <h2>Livro não encontrado</h2>
+        <p>
+          O livro com o ISBN fornecido não foi encontrado ou você não tem permissão para
+          visualizá-lo.
+        </p>
+        <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
+      </div>
+    </div>
+  </Card>
+</template>
+
+<style scoped>
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  font-family: 'Whisper', cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2rem;
+  margin: 0;
+  text-align: center;
+}
+
+.back-btn {
+  font-weight: 500;
+}
+
+.book-detail-section {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.retry-btn {
+  max-width: 200px;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.book-detail {
+  background: #f9fafb;
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.book-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.book-title {
+  font-family: 'Whisper', cursive;
+  font-size: 3rem;
+  font-weight: 400;
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  line-height: 1.2;
+}
+
+.book-author {
+  font-size: 1.25rem;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+.book-description {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.book-description p {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+}
+
+.book-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.info-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.info-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.stock-value.low-stock {
+  color: #dc2626;
+}
+
+.date-value {
+  font-size: 1.125rem;
+}
+
+.book-actions {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.not-found {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.not-found h2 {
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.not-found p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .book-title {
+    font-size: 2rem;
+  }
+
+  .book-detail {
+    padding: 1.5rem;
+  }
+
+  .book-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
