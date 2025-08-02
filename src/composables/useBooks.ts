@@ -7,6 +7,7 @@ export interface Book {
   description?: string
   author: string
   stock: number
+  isFavorite: boolean
   createdAt?: string
   updatedAt?: string
 }
@@ -118,6 +119,23 @@ export const useBooks = () => {
     fetchBooks(1, pagination.value.limit, '')
   }
 
+  const toggleFavorite = async (isbn: string) => {
+    try {
+      const res = await auth.makeAuthenticatedRequest(`/books/${isbn}/favorite`, 'PATCH')
+      if (res.success) {
+        const bookReference = res.data
+        const bookIndex = books.value.findIndex((book) => book.isbn === isbn)
+        if (bookIndex !== -1) {
+          books.value[bookIndex].isFavorite = bookReference.isFavorite
+        }
+      }
+      return res
+    } catch (err: any) {
+      error.value = err
+      throw err
+    }
+  }
+
   onMounted(() => {
     fetchBooks()
   })
@@ -137,5 +155,6 @@ export const useBooks = () => {
     searchBooks,
     clearSearch,
     currentSearch,
+    toggleFavorite,
   }
 }

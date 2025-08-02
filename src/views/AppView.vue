@@ -20,6 +20,7 @@ const {
   changeLimit,
   searchBooks,
   clearSearch: clearBooksSearch,
+  toggleFavorite,
 } = useBooks()
 
 const handleLogout = async () => {
@@ -36,6 +37,15 @@ const handleSearch = () => {
 const clearSearch = () => {
   searchTerm.value = ''
   clearBooksSearch()
+}
+
+const handleToggleFavorite = async (isbn: string, event: Event) => {
+  event.stopPropagation()
+  try {
+    await toggleFavorite(isbn)
+  } catch (error) {
+    console.error('Erro ao favoritar livro:', error)
+  }
 }
 
 const getVisiblePages = () => {
@@ -83,9 +93,7 @@ const getVisiblePages = () => {
               @keyup.enter="handleSearch"
             />
             <Button @click="handleSearch" variant="primary" class="search-btn"> Buscar </Button>
-            <Button v-if="searchTerm" @click="clearSearch" variant="outline" class="clear-btn">
-              Limpar
-            </Button>
+            <Button @click="clearSearch" variant="outline" class="clear-btn"> Limpar </Button>
           </div>
           <div v-if="searchTerm" class="search-info">
             Buscando por: "<strong>{{ searchTerm }}</strong
@@ -102,7 +110,7 @@ const getVisiblePages = () => {
         </div>
 
         <div v-else-if="books.length === 0" class="no-books">
-          <p>Nenhum livro cadastrado ainda.</p>
+          <p>Nenhum livro encontrado, adicione mais livros a sua biblioteca.</p>
           <Button
             @click="() => router.push('/add-book')"
             variant="primary"
@@ -142,13 +150,23 @@ const getVisiblePages = () => {
               class="book-item"
               @click="() => router.push(`/book/${book.isbn}`)"
             >
-              <div class="book-info">
-                <h4 class="book-name">{{ book.name }}</h4>
-                <p class="book-author">por {{ book.author }}</p>
-                <p class="book-details">
-                  <span class="book-isbn">ISBN: {{ book.isbn }}</span>
-                  <span class="book-stock">Estoque: {{ book.stock }}</span>
-                </p>
+              <div class="book-content">
+                <div>
+                  <h4 class="book-name">{{ book.name }}</h4>
+                  <p class="book-author">por {{ book.author }}</p>
+                  <p class="book-details">
+                    <span class="book-isbn">ISBN: {{ book.isbn }}</span>
+                    <span class="book-stock">Estoque: {{ book.stock }}</span>
+                  </p>
+                </div>
+                <button
+                  @click="handleToggleFavorite(book.isbn, $event)"
+                  class="favorite-btn"
+                  :class="{ 'favorite-active': book.isFavorite }"
+                  :title="book.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+                >
+                  <span class="star-icon">★</span>
+                </button>
               </div>
               <div class="click-indicator">Clique para ver detalhes →</div>
             </div>
@@ -275,7 +293,7 @@ const getVisiblePages = () => {
 }
 
 .limit-select {
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   background: white;
@@ -311,6 +329,13 @@ const getVisiblePages = () => {
   position: relative;
 }
 
+.book-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
 .book-item:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -324,23 +349,21 @@ const getVisiblePages = () => {
 .book-name {
   font-size: 1.25rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
   color: #1f2937;
 }
 
 .book-author {
   font-size: 1rem;
   color: #6b7280;
-  margin: 0 0 0.75rem 0;
   font-style: italic;
 }
 
 .book-details {
   display: flex;
   gap: 1.5rem;
+  margin-top: 0.5rem;
   font-size: 0.875rem;
   color: #4b5563;
-  margin: 0;
 }
 
 .book-isbn,
@@ -351,7 +374,7 @@ const getVisiblePages = () => {
 .click-indicator {
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  right: 4rem;
   background: #3b82f6;
   color: white;
   padding: 0.25rem 0.75rem;
@@ -361,6 +384,41 @@ const getVisiblePages = () => {
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.favorite-btn:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.1);
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  color: #d1d5db;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.favorite-btn.favorite-active .star-icon {
+  color: #fbbf24;
+}
+
+.favorite-btn:hover .star-icon {
+  color: #fbbf24;
 }
 
 .pagination {
