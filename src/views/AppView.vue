@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useBooks } from '../composables/useBooks'
 import { Button, Card, AppLayout } from '../components'
@@ -6,6 +7,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const auth = useAuth()
+const searchTerm = ref('')
+
 const {
   books,
   pagination,
@@ -15,11 +18,24 @@ const {
   prevPage,
   goToPage,
   changeLimit,
+  searchBooks,
+  clearSearch: clearBooksSearch,
 } = useBooks()
 
 const handleLogout = async () => {
   await auth.logout()
   router.push('/')
+}
+
+const handleSearch = () => {
+  if (searchTerm.value.trim()) {
+    searchBooks(searchTerm.value.trim())
+  }
+}
+
+const clearSearch = () => {
+  searchTerm.value = ''
+  clearBooksSearch()
 }
 
 const getVisiblePages = () => {
@@ -56,6 +72,26 @@ const getVisiblePages = () => {
     <Card>
       <div class="books-section">
         <h3 class="books-title">Meus Livros</h3>
+
+        <div class="search-section">
+          <div class="search-container">
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="Buscar por nome, autor, ISBN ou descrição..."
+              class="search-input"
+              @keyup.enter="handleSearch"
+            />
+            <Button @click="handleSearch" variant="primary" class="search-btn"> Buscar </Button>
+            <Button v-if="searchTerm" @click="clearSearch" variant="outline" class="clear-btn">
+              Limpar
+            </Button>
+          </div>
+          <div v-if="searchTerm" class="search-info">
+            Buscando por: "<strong>{{ searchTerm }}</strong
+            >"
+          </div>
+        </div>
 
         <div v-if="booksError" class="message error-message">
           {{ booksError }}
@@ -381,5 +417,74 @@ const getVisiblePages = () => {
   font-size: 0.875rem;
   color: #6b7280;
   text-align: center;
+}
+
+.search-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 2rem;
+}
+
+.search-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-btn,
+.clear-btn {
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.search-info {
+  text-align: center;
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.search-info strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .search-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-btn,
+  .clear-btn {
+    width: 100%;
+  }
 }
 </style>

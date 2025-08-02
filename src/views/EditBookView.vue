@@ -145,7 +145,7 @@ onMounted(() => {
             </div>
 
             <div class="input-group input-size">
-              <label>Breve Descrição:</label>
+              <label>Descrição:</label>
               <textarea
                 v-model="bookData.description"
                 placeholder="Digite uma breve descrição do livro"

@@ -18,6 +18,7 @@ export interface BooksPagination {
   limit: number
   hasNextPage: boolean
   hasPrevPage: boolean
+  search?: string
 }
 
 export interface BooksResponse {
@@ -28,6 +29,7 @@ export interface BooksResponse {
 export const useBooks = () => {
   const auth = useAuth()
   const books = ref<Book[]>([])
+  const currentSearch = ref('')
   const pagination = ref<BooksPagination>({
     currentPage: 1,
     totalPages: 1,
@@ -43,12 +45,19 @@ export const useBooks = () => {
     error.value = null
   }
 
-  const fetchBooks = async (page: number = 1, limit: number = 10) => {
+  const fetchBooks = async (page: number = 1, limit: number = 10, search: string = '') => {
     isLoading.value = true
     clearError()
 
     try {
-      const res = await auth.makeAuthenticatedRequest(`/books?page=${page}&limit=${limit}`, 'GET')
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      })
+
+      if (search) params.append('search', search)
+
+      const res = await auth.makeAuthenticatedRequest(`/books?${params.toString()}`, 'GET')
 
       if (res.success && res.data) {
         books.value = res.data.books
@@ -60,6 +69,7 @@ export const useBooks = () => {
               ? parseInt(res.data.pagination.currentPage, 10)
               : res.data.pagination.currentPage,
           limit: limit,
+          search: search,
         }
       } else {
         error.value = res.message || 'Erro ao carregar livros'
@@ -73,7 +83,7 @@ export const useBooks = () => {
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= pagination.value.totalPages) {
-      fetchBooks(page, pagination.value.limit)
+      fetchBooks(page, pagination.value.limit, currentSearch.value)
     }
   }
 
@@ -90,12 +100,22 @@ export const useBooks = () => {
   }
 
   const refreshBooks = () => {
-    fetchBooks(pagination.value.currentPage, pagination.value.limit)
+    fetchBooks(pagination.value.currentPage, pagination.value.limit, currentSearch.value)
   }
 
   const changeLimit = (newLimit: number) => {
     pagination.value.limit = newLimit
-    fetchBooks(1, newLimit)
+    fetchBooks(1, newLimit, currentSearch.value)
+  }
+
+  const searchBooks = (searchTerm: string) => {
+    currentSearch.value = searchTerm
+    fetchBooks(1, pagination.value.limit, searchTerm)
+  }
+
+  const clearSearch = () => {
+    currentSearch.value = ''
+    fetchBooks(1, pagination.value.limit, '')
   }
 
   onMounted(() => {
@@ -114,5 +134,8 @@ export const useBooks = () => {
     prevPage,
     refreshBooks,
     changeLimit,
+    searchBooks,
+    clearSearch,
+    currentSearch,
   }
 }
