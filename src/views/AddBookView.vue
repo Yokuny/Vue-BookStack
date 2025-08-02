@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Card, Button } from '../components'
+import { Card, Button, AppLayout } from '../components'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
@@ -65,87 +65,86 @@ const handleBack = () => {
 </script>
 
 <template>
-  <Card>
-    <template #header>
-      <p class="logo">Book Stack</p>
-      <div class="navigation-controls">
-        <Button @click="handleBack" variant="system">Voltar</Button>
-      </div>
+  <AppLayout>
+    <template #actions>
+      <Button @click="handleBack" variant="system">Voltar</Button>
     </template>
 
-    <div class="form">
-      <div class="form-group form-group-size">
-        <h3 class="form-title">Adicionar Livro</h3>
+    <Card>
+      <div class="form">
+        <div class="form-group form-group-size">
+          <h3 class="form-title">Adicionar Livro</h3>
 
-        <div v-if="error" class="message error-message">
-          {{ error }}
-        </div>
-        <div v-if="success" class="message success-message">
-          {{ success }}
-        </div>
+          <div v-if="error" class="message error-message">
+            {{ error }}
+          </div>
+          <div v-if="success" class="message success-message">
+            {{ success }}
+          </div>
 
-        <div class="input-group input-size">
-          <label>ISBN: *</label>
-          <input
-            v-model="bookData.isbn"
-            type="text"
-            placeholder="Ex: 978-0-123456-47-2"
-            :disabled="isLoading"
-            @input="clearMessages"
-          />
-        </div>
+          <div class="input-group input-size">
+            <label>ISBN: *</label>
+            <input
+              v-model="bookData.isbn"
+              type="text"
+              placeholder="Ex: 978-0-123456-47-2"
+              :disabled="isLoading"
+              @input="clearMessages"
+            />
+          </div>
 
-        <div class="input-group input-size">
-          <label>Nome do Livro: *</label>
-          <input
-            v-model="bookData.name"
-            type="text"
-            placeholder="Digite o nome do livro"
-            :disabled="isLoading"
-            @input="clearMessages"
-          />
-        </div>
+          <div class="input-group input-size">
+            <label>Nome do Livro: *</label>
+            <input
+              v-model="bookData.name"
+              type="text"
+              placeholder="Digite o nome do livro"
+              :disabled="isLoading"
+              @input="clearMessages"
+            />
+          </div>
 
-        <div class="input-group input-size">
-          <label>Autor: *</label>
-          <input
-            v-model="bookData.author"
-            type="text"
-            placeholder="Digite o nome do autor"
-            :disabled="isLoading"
-            @input="clearMessages"
-          />
-        </div>
+          <div class="input-group input-size">
+            <label>Autor: *</label>
+            <input
+              v-model="bookData.author"
+              type="text"
+              placeholder="Digite o nome do autor"
+              :disabled="isLoading"
+              @input="clearMessages"
+            />
+          </div>
 
-        <div class="input-group input-size">
-          <label>Breve Descrição:</label>
-          <textarea
-            v-model="bookData.description"
-            placeholder="Digite uma breve descrição do livro"
-            :disabled="isLoading"
-            @input="clearMessages"
-            rows="4"
-          />
-        </div>
+          <div class="input-group input-size">
+            <label>Breve Descrição:</label>
+            <textarea
+              v-model="bookData.description"
+              placeholder="Digite uma breve descrição do livro"
+              :disabled="isLoading"
+              @input="clearMessages"
+              rows="4"
+            />
+          </div>
 
-        <div class="input-group input-size">
-          <label>Estoque:</label>
-          <input
-            v-model.number="bookData.stock"
-            type="number"
-            min="0"
-            placeholder="0"
-            :disabled="isLoading"
-            @input="clearMessages"
-          />
-        </div>
+          <div class="input-group input-size">
+            <label>Estoque:</label>
+            <input
+              v-model.number="bookData.stock"
+              type="number"
+              min="0"
+              placeholder="0"
+              :disabled="isLoading"
+              @input="clearMessages"
+            />
+          </div>
 
-        <Button class="input-size" @click="handleAddBook" variant="primary" :disabled="isLoading">
-          {{ isLoading ? 'Adicionando...' : 'Adicionar Livro' }}
-        </Button>
+          <Button class="input-size" @click="handleAddBook" variant="primary" :disabled="isLoading">
+            {{ isLoading ? 'Adicionando...' : 'Adicionar Livro' }}
+          </Button>
+        </div>
       </div>
-    </div>
-  </Card>
+    </Card>
+  </AppLayout>
 </template>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Card, Button, Switch } from '../components'
+import { Card, Button, Switch, AppLayout } from '../components'
 import { useAuth } from '../composables/useAuth'
 import { useSignup } from '../composables/useSignup'
 
@@ -43,118 +43,116 @@ const handleGuest = () => {
 </script>
 
 <template>
-  <Card>
-    <template #header>
-      <p class="logo">Book Stack</p>
-      <div class="navigation-controls">
-        <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
-
-        <Button v-if="currentMode !== 'guest'" @click="handleGuest" variant="system">
-          Visitante
-        </Button>
-      </div>
+  <AppLayout>
+    <template #navigation>
+      <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
+    </template>
+    <template #actions>
+      <Button v-if="currentMode !== 'guest'" @click="handleGuest" variant="system">
+        Visitante
+      </Button>
     </template>
 
-    <div v-if="currentMode === 'signin'" class="form">
-      <div class="form-group form-group-size">
-        <h3 class="form-title">Entrar</h3>
+    <Card>
+      <div v-if="currentMode === 'signin'" class="form">
+        <div class="form-group form-group-size">
+          <h3 class="form-title">Entrar</h3>
 
-        <div v-if="auth.error.value" class="message error-message">
-          {{ auth.error.value }}
-        </div>
-        <div v-if="auth.success.value" class="message success-message">
-          {{ auth.success.value }}
-        </div>
+          <div v-if="auth.error.value" class="message error-message">
+            {{ auth.error.value }}
+          </div>
+          <div v-if="auth.success.value" class="message success-message">
+            {{ auth.success.value }}
+          </div>
 
-        <div class="input-group input-size">
-          <label>Nome:</label>
-          <input
-            v-model="signinData.name"
-            type="text"
+          <div class="input-group input-size">
+            <label>Nome:</label>
+            <input
+              v-model="signinData.name"
+              type="text"
+              :disabled="auth.isLoading.value"
+              @input="auth.clearMessages"
+            />
+          </div>
+          <div class="input-group input-size">
+            <label>Senha:</label>
+            <input
+              v-model="signinData.password"
+              type="password"
+              :disabled="auth.isLoading.value"
+              @input="auth.clearMessages"
+              @keyup.enter="handleSignin"
+            />
+          </div>
+          <Button
+            class="input-size"
+            @click="handleSignin"
+            variant="primary"
             :disabled="auth.isLoading.value"
-            @input="auth.clearMessages"
-          />
+          >
+            {{ auth.isLoading.value ? 'Entrando...' : 'Entrar' }}
+          </Button>
         </div>
-        <div class="input-group input-size">
-          <label>Senha:</label>
-          <input
-            v-model="signinData.password"
-            type="password"
-            :disabled="auth.isLoading.value"
-            @input="auth.clearMessages"
-            @keyup.enter="handleSignin"
-          />
-        </div>
-        <Button
-          class="input-size"
-          @click="handleSignin"
-          variant="primary"
-          :disabled="auth.isLoading.value"
-        >
-          {{ auth.isLoading.value ? 'Entrando...' : 'Entrar' }}
-        </Button>
       </div>
-    </div>
 
-    <div v-if="currentMode === 'signup'" class="form">
-      <div class="form-group form-group-size">
-        <h3 class="form-title">Criar conta</h3>
+      <div v-if="currentMode === 'signup'" class="form">
+        <div class="form-group form-group-size">
+          <h3 class="form-title">Criar conta</h3>
 
-        <div v-if="signup.error.value" class="message error-message">
-          {{ signup.error.value }}
-        </div>
-        <div v-if="signup.success.value" class="message success-message">
-          {{ signup.success.value }}
-        </div>
+          <div v-if="signup.error.value" class="message error-message">
+            {{ signup.error.value }}
+          </div>
+          <div v-if="signup.success.value" class="message success-message">
+            {{ signup.success.value }}
+          </div>
 
-        <div class="input-group input-size">
-          <label>Nome:</label>
-          <input
-            v-model="signupData.name"
-            type="text"
+          <div class="input-group input-size">
+            <label>Nome:</label>
+            <input
+              v-model="signupData.name"
+              type="text"
+              :disabled="signup.isLoading.value"
+              @input="signup.clearMessages"
+            />
+          </div>
+          <div class="input-group input-size">
+            <label>Senha:</label>
+            <input
+              v-model="signupData.password"
+              type="password"
+              :disabled="signup.isLoading.value"
+              @input="signup.clearMessages"
+            />
+          </div>
+          <div class="input-group input-size">
+            <label>Confirmar Senha:</label>
+            <input
+              v-model="signupData.confirmPassword"
+              type="password"
+              :disabled="signup.isLoading.value"
+              @input="signup.clearMessages"
+              @keyup.enter="handleSignup"
+            />
+          </div>
+          <Button
+            class="input-size"
+            @click="handleSignup"
+            variant="primary"
             :disabled="signup.isLoading.value"
-            @input="signup.clearMessages"
-          />
+          >
+            {{ signup.isLoading.value ? 'Criando conta...' : 'Criar Conta' }}
+          </Button>
         </div>
-        <div class="input-group input-size">
-          <label>Senha:</label>
-          <input
-            v-model="signupData.password"
-            type="password"
-            :disabled="signup.isLoading.value"
-            @input="signup.clearMessages"
-          />
-        </div>
-        <div class="input-group input-size">
-          <label>Confirmar Senha:</label>
-          <input
-            v-model="signupData.confirmPassword"
-            type="password"
-            :disabled="signup.isLoading.value"
-            @input="signup.clearMessages"
-            @keyup.enter="handleSignup"
-          />
-        </div>
-        <Button
-          class="input-size"
-          @click="handleSignup"
-          variant="primary"
-          :disabled="signup.isLoading.value"
-        >
-          {{ signup.isLoading.value ? 'Criando conta...' : 'Criar Conta' }}
-        </Button>
       </div>
-    </div>
 
-    <div v-if="currentMode === 'guest'" class="form">
-      <div>
-        <h3>Carregando...</h3>
-        <p>Entrando como visitante...</p>
+      <div v-if="currentMode === 'guest'" class="form">
+        <div>
+          <h3>Carregando...</h3>
+          <p>Entrando como visitante...</p>
+        </div>
       </div>
-    </div>
-
-    <footer class="template-footer" style="padding: 2rem"></footer>
-  </Card>
+    </Card>
+  </AppLayout>
 </template>
 
 <style>
@@ -237,9 +235,5 @@ const handleGuest = () => {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input-group {
-  margin-bottom: 1rem;
 }
 </style>

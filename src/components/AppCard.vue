@@ -13,7 +13,7 @@
 <style scoped>
 .card {
   background-color: var(--base);
-  border-radius: 1.5rem;
+  border-radius: 2rem;
   padding: 3rem;
   padding-top: 2rem;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);

@@ -2,7 +2,7 @@
 import { onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookDetail } from '../composables/useBookDetail'
-import { Button, Card } from '../components'
+import { Button, Card, AppLayout } from '../components'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,111 +83,106 @@ watch(
 </script>
 
 <template>
-  <Card>
-    <template #header>
-      <div class="header-content">
-        <Button @click="goBack" variant="system"> ← Voltar </Button>
-        <p class="logo">Book Stack</p>
-                  <div v-if="book" class="book-actions">
-            <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
-              Editar Livro
-            </Button>
-            <Button @click="openDeleteConfirm" variant="system" class="delete-btn">
-              Deletar Livro
-            </Button>
-            <Button @click="goBack" variant="system"> Voltar à Lista </Button>
-          </div>
+  <AppLayout>
+    <template #actions>
+      <div v-if="book" class="book-actions">
+        <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
+          Editar Livro
+        </Button>
+        <Button @click="openDeleteConfirm" variant="system" class="delete-btn">
+          Deletar Livro
+        </Button>
+        <Button @click="goBack" variant="system">Voltar</Button>
       </div>
+      <Button v-else @click="goBack" variant="system">Voltar</Button>
     </template>
 
-    <div class="book-detail-section">
-      <div v-if="error" class="message error-message">
-        {{ error }}
-        <Button @click="loadBook" variant="outline" class="retry-btn"> Tentar Novamente </Button>
-      </div>
+    <Card>
+      <div class="book-detail-section">
+        <div v-if="error" class="message error-message">
+          {{ error }}
+          <Button @click="loadBook" variant="outline" class="retry-btn"> Tentar Novamente </Button>
+        </div>
 
-      <div v-if="isLoading" class="loading">
-        <div class="loading-spinner"></div>
-        <p>Carregando detalhes do livro...</p>
-      </div>
+        <div v-if="isLoading" class="loading">
+          <div class="loading-spinner"></div>
+          <p>Carregando detalhes do livro...</p>
+        </div>
 
-      <div v-else-if="book" class="book-detail">
-        <div class="book-header">
-          <h1 class="book-title">{{ book.name }}</h1>
-          <p class="book-author">por {{ book.author }}</p>
-          <div v-if="book.description" class="book-description">
-            <p>{{ book.description }}</p>
+        <div v-else-if="book" class="book-detail">
+          <div class="book-header">
+            <h1 class="book-title">{{ book.name }}</h1>
+            <p class="book-author">por {{ book.author }}</p>
+            <div v-if="book.description" class="book-description">
+              <p>{{ book.description }}</p>
+            </div>
+          </div>
+
+          <div class="book-info-grid">
+            <div class="info-card">
+              <h3 class="info-label">ISBN</h3>
+              <p class="info-value">{{ book.isbn }}</p>
+            </div>
+
+            <div class="info-card">
+              <h3 class="info-label">Estoque</h3>
+              <p class="info-value stock-value" :class="{ 'low-stock': book.stock < 5 }">
+                {{ book.stock }} {{ book.stock === 1 ? 'unidade' : 'unidades' }}
+              </p>
+            </div>
+
+            <div v-if="book.createdAt" class="info-card">
+              <h3 class="info-label">Data de Cadastro</h3>
+              <p class="info-value date-value">{{ formatDate(book.createdAt) }}</p>
+            </div>
+
+            <div v-if="book.updatedAt && book.updatedAt !== book.createdAt" class="info-card">
+              <h3 class="info-label">Última Atualização</h3>
+              <p class="info-value date-value">{{ formatDate(book.updatedAt) }}</p>
+            </div>
           </div>
         </div>
 
-        <div class="book-info-grid">
-          <div class="info-card">
-            <h3 class="info-label">ISBN</h3>
-            <p class="info-value">{{ book.isbn }}</p>
+        <div v-else-if="!isLoading && !error" class="not-found">
+          <h2>Livro não encontrado</h2>
+          <p>
+            O livro com o ISBN fornecido não foi encontrado ou você não tem permissão para
+            visualizá-lo.
+          </p>
+          <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
+        </div>
+      </div>
+
+      <div v-if="showDeleteConfirm" class="modal-overlay" @click="closeDeleteConfirm">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h3>Confirmar Exclusão</h3>
+            <button @click="closeDeleteConfirm" class="modal-close">×</button>
           </div>
 
-          <div class="info-card">
-            <h3 class="info-label">Estoque</h3>
-            <p class="info-value stock-value" :class="{ 'low-stock': book.stock < 5 }">
-              {{ book.stock }} {{ book.stock === 1 ? 'unidade' : 'unidades' }}
+          <div class="modal-body">
+            <div v-if="deleteError" class="message error-message">
+              {{ deleteError }}
+            </div>
+
+            <p class="confirm-text">
+              Tem certeza que deseja excluir o livro
+              <strong>"{{ book?.name }}"</strong>?
             </p>
           </div>
 
-          <div v-if="book.createdAt" class="info-card">
-            <h3 class="info-label">Data de Cadastro</h3>
-            <p class="info-value date-value">{{ formatDate(book.createdAt) }}</p>
-          </div>
-
-          <div v-if="book.updatedAt && book.updatedAt !== book.createdAt" class="info-card">
-            <h3 class="info-label">Última Atualização</h3>
-            <p class="info-value date-value">{{ formatDate(book.updatedAt) }}</p>
+          <div class="modal-actions">
+            <Button @click="closeDeleteConfirm" variant="system" :disabled="isDeleting">
+              Cancelar
+            </Button>
+            <Button @click="handleDeleteBook" variant="system" :disabled="isDeleting">
+              {{ isDeleting ? 'Deletando...' : 'Deletar' }}
+            </Button>
           </div>
         </div>
       </div>
-
-      <div v-else-if="!isLoading && !error" class="not-found">
-        <h2>Livro não encontrado</h2>
-        <p>
-          O livro com o ISBN fornecido não foi encontrado ou você não tem permissão para
-          visualizá-lo.
-        </p>
-        <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
-      </div>
-    </div>
-
-    <div v-if="showDeleteConfirm" class="modal-overlay" @click="closeDeleteConfirm">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3>Confirmar Exclusão</h3>
-          <button @click="closeDeleteConfirm" class="modal-close">×</button>
-        </div>
-
-        <div class="modal-body">
-          <div v-if="deleteError" class="message error-message">
-            {{ deleteError }}
-          </div>
-
-          <p class="confirm-text">
-            Tem certeza que deseja excluir o livro
-            <strong>"{{ book?.name }}"</strong>?
-          </p>
-        </div>
-
-        <div class="modal-actions">
-          <Button @click="closeDeleteConfirm" variant="system" :disabled="isDeleting">
-            Cancelar
-          </Button>
-          <Button
-            @click="handleDeleteBook"
-            variant="system"
-            :disabled="isDeleting"
-          >
-            {{ isDeleting ? 'Deletando...' : 'Deletar' }}
-          </Button>
-        </div>
-      </div>
-    </div>
-  </Card>
+    </Card>
+  </AppLayout>
 </template>
 
 <style scoped>

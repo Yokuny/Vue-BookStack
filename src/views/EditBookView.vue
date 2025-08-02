@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Card, Button } from '../components'
+import { Card, Button, AppLayout } from '../components'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useBookDetail } from '../composables/useBookDetail'
@@ -90,103 +90,102 @@ onMounted(() => {
 </script>
 
 <template>
-  <Card>
-    <template #header>
-      <p class="logo">Book Stack</p>
-      <div class="navigation-controls">
-        <Button @click="handleBack" variant="system">Voltar</Button>
-      </div>
+  <AppLayout>
+    <template #actions>
+      <Button @click="handleBack" variant="system">Voltar</Button>
     </template>
 
-    <div class="form">
-      <div class="form-group form-group-size">
-        <h3 class="form-title">Editar Livro</h3>
+    <Card>
+      <div class="form">
+        <div class="form-group form-group-size">
+          <h3 class="form-title">Editar Livro</h3>
 
-        <div v-if="isLoadingBook" class="loading">
-          <div class="loading-spinner"></div>
-          <p>Carregando dados do livro...</p>
-        </div>
-
-        <template v-else-if="book">
-          <div v-if="error" class="message error-message">
-            {{ error }}
-          </div>
-          <div v-if="success" class="message success-message">
-            {{ success }}
+          <div v-if="isLoadingBook" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Carregando dados do livro...</p>
           </div>
 
-          <div class="input-group input-size">
-            <div style="display: flex; align-items: baseline; gap: 0.5rem">
-              <label>ISBN:</label>
-              <p class="isbn-note">O ISBN não pode ser alterado</p>
+          <template v-else-if="book">
+            <div v-if="error" class="message error-message">
+              {{ error }}
+            </div>
+            <div v-if="success" class="message success-message">
+              {{ success }}
             </div>
 
-            <input class="isbn-value" :value="book.isbn" disabled />
-          </div>
+            <div class="input-group input-size">
+              <div style="display: flex; align-items: baseline; gap: 0.5rem">
+                <label>ISBN:</label>
+                <p class="isbn-note">O ISBN não pode ser alterado</p>
+              </div>
 
-          <div class="input-group input-size">
-            <label>Nome do Livro: *</label>
-            <input
-              v-model="bookData.name"
-              type="text"
-              placeholder="Digite o nome do livro"
+              <input class="isbn-value" :value="book.isbn" disabled />
+            </div>
+
+            <div class="input-group input-size">
+              <label>Nome do Livro: *</label>
+              <input
+                v-model="bookData.name"
+                type="text"
+                placeholder="Digite o nome do livro"
+                :disabled="isLoading"
+                @input="clearMessages"
+              />
+            </div>
+
+            <div class="input-group input-size">
+              <label>Autor: *</label>
+              <input
+                v-model="bookData.author"
+                type="text"
+                placeholder="Digite o nome do autor"
+                :disabled="isLoading"
+                @input="clearMessages"
+              />
+            </div>
+
+            <div class="input-group input-size">
+              <label>Breve Descrição:</label>
+              <textarea
+                v-model="bookData.description"
+                placeholder="Digite uma breve descrição do livro"
+                :disabled="isLoading"
+                @input="clearMessages"
+                rows="4"
+              />
+            </div>
+
+            <div class="input-group input-size">
+              <label>Estoque:</label>
+              <input
+                v-model.number="bookData.stock"
+                type="number"
+                min="0"
+                placeholder="0"
+                :disabled="isLoading"
+                @input="clearMessages"
+              />
+            </div>
+
+            <Button
+              class="input-size"
+              @click="handleUpdateBook"
+              variant="primary"
               :disabled="isLoading"
-              @input="clearMessages"
-            />
+            >
+              {{ isLoading ? 'Atualizando...' : 'Atualizar Livro' }}
+            </Button>
+          </template>
+
+          <div v-else class="error-state">
+            <h4>Livro não encontrado</h4>
+            <p>Não foi possível carregar os dados do livro para edição.</p>
+            <Button @click="() => router.push('/app')" variant="primary"> Voltar à Lista </Button>
           </div>
-
-          <div class="input-group input-size">
-            <label>Autor: *</label>
-            <input
-              v-model="bookData.author"
-              type="text"
-              placeholder="Digite o nome do autor"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
-
-          <div class="input-group input-size">
-            <label>Breve Descrição:</label>
-            <textarea
-              v-model="bookData.description"
-              placeholder="Digite uma breve descrição do livro"
-              :disabled="isLoading"
-              @input="clearMessages"
-              rows="4"
-            />
-          </div>
-
-          <div class="input-group input-size">
-            <label>Estoque:</label>
-            <input
-              v-model.number="bookData.stock"
-              type="number"
-              min="0"
-              placeholder="0"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
-
-          <Button
-            class="input-size"
-            @click="handleUpdateBook"
-            variant="primary"
-            :disabled="isLoading"
-          >
-            {{ isLoading ? 'Atualizando...' : 'Atualizar Livro' }}
-          </Button>
-        </template>
-
-        <div v-else class="error-state">
-          <h4>Livro não encontrado</h4>
-          <p>Não foi possível carregar os dados do livro para edição.</p>
-          <Button @click="() => router.push('/app')" variant="primary"> Voltar à Lista </Button>
         </div>
       </div>
-    </div>
-  </Card>
+    </Card>
+  </AppLayout>
 </template>
 
 <style scoped>

@@ -1,3 +1,6 @@
 export { default as Card } from './AppCard.vue'
 export { default as Button } from './AppButton.vue'
 export { default as Switch } from './AppSwitch.vue'
+export { default as Header } from './AppHeader.vue'
+export { default as Footer } from './AppFooter.vue'
+export { default as AppLayout } from './AppLayout.vue'

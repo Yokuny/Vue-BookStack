@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuth } from '../composables/useAuth'
 import { useBooks } from '../composables/useBooks'
-import { Button, Card } from '../components'
+import { Button, Card, AppLayout } from '../components'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -47,133 +47,124 @@ const getVisiblePages = () => {
 </script>
 
 <template>
-  <Card>
-    <template #header>
-      <p class="logo">Book Stack</p>
-      <div class="user-info">
-        <Button @click="() => router.push('/add-book')" variant="system">Adicionar Livro</Button>
-        <Button @click="handleLogout" variant="system">Sair</Button>
-      </div>
+  <AppLayout>
+    <template #actions>
+      <Button @click="() => router.push('/add-book')" variant="system">Adicionar Livro</Button>
+      <Button @click="handleLogout" variant="system">Sair</Button>
     </template>
 
-    <div class="books-section">
-      <h3 class="books-title">Meus Livros</h3>
+    <Card>
+      <div class="books-section">
+        <h3 class="books-title">Meus Livros</h3>
 
-      <div v-if="booksError" class="message error-message">
-        {{ booksError }}
-      </div>
-
-      <div v-if="booksLoading" class="loading">
-        <p>Carregando livros...</p>
-      </div>
-
-      <div v-else-if="books.length === 0" class="no-books">
-        <p>Nenhum livro cadastrado ainda.</p>
-        <Button
-          @click="() => router.push('/add-book')"
-          variant="primary"
-          class="add-first-book-btn"
-        >
-          Adicionar Primeiro Livro
-        </Button>
-      </div>
-
-      <div v-else class="books-list">
-        <div class="books-controls">
-          <div class="items-per-page">
-            <label for="limit-select">Itens por página:</label>
-            <select
-              id="limit-select"
-              :value="pagination.limit"
-              @change="changeLimit(parseInt(($event.target as HTMLSelectElement).value))"
-              class="limit-select"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-            </select>
-          </div>
-
-          <div class="books-info">
-            Mostrando {{ books.length }} de {{ pagination.totalCount }} livros
-          </div>
+        <div v-if="booksError" class="message error-message">
+          {{ booksError }}
         </div>
 
-        <div class="books-grid">
-          <div
-            v-for="book in books"
-            :key="book.isbn"
-            class="book-item"
-            @click="() => router.push(`/book/${book.isbn}`)"
+        <div v-if="booksLoading" class="loading">
+          <p>Carregando livros...</p>
+        </div>
+
+        <div v-else-if="books.length === 0" class="no-books">
+          <p>Nenhum livro cadastrado ainda.</p>
+          <Button
+            @click="() => router.push('/add-book')"
+            variant="primary"
+            class="add-first-book-btn"
           >
-            <div class="book-info">
-              <h4 class="book-name">{{ book.name }}</h4>
-              <p class="book-author">por {{ book.author }}</p>
-              <p class="book-details">
-                <span class="book-isbn">ISBN: {{ book.isbn }}</span>
-                <span class="book-stock">Estoque: {{ book.stock }}</span>
-              </p>
-            </div>
-            <div class="click-indicator">Clique para ver detalhes →</div>
-          </div>
+            Adicionar Primeiro Livro
+          </Button>
         </div>
 
-        <div class="pagination">
-          <div class="pagination-controls">
-            <Button
-              @click="prevPage"
-              :disabled="!pagination.hasPrevPage"
-              variant="outline"
-              class="pagination-btn"
-            >
-              ← Anterior
-            </Button>
-
-            <div class="page-numbers">
-              <button
-                v-for="page in getVisiblePages()"
-                :key="page"
-                @click="goToPage(page)"
-                :class="['page-number', { active: page === pagination.currentPage }]"
-                :disabled="page === pagination.currentPage"
+        <div v-else class="books-list">
+          <div class="books-controls">
+            <div class="items-per-page">
+              <label for="limit-select">Itens por página:</label>
+              <select
+                id="limit-select"
+                :value="pagination.limit"
+                @change="changeLimit(parseInt(($event.target as HTMLSelectElement).value))"
+                class="limit-select"
               >
-                {{ page }}
-              </button>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+              </select>
             </div>
 
-            <Button
-              @click="nextPage"
-              :disabled="!pagination.hasNextPage"
-              variant="outline"
-              class="pagination-btn"
-            >
-              Próxima →
-            </Button>
+            <div class="books-info">
+              Mostrando {{ books.length }} de {{ pagination.totalCount }} livros
+            </div>
           </div>
 
-          <div class="pagination-info">
-            Página {{ pagination.currentPage }} de {{ pagination.totalPages }} ({{
-              pagination.totalCount
-            }}
-            livros total)
+          <div class="books-grid">
+            <div
+              v-for="book in books"
+              :key="book.isbn"
+              class="book-item"
+              @click="() => router.push(`/book/${book.isbn}`)"
+            >
+              <div class="book-info">
+                <h4 class="book-name">{{ book.name }}</h4>
+                <p class="book-author">por {{ book.author }}</p>
+                <p class="book-details">
+                  <span class="book-isbn">ISBN: {{ book.isbn }}</span>
+                  <span class="book-stock">Estoque: {{ book.stock }}</span>
+                </p>
+              </div>
+              <div class="click-indicator">Clique para ver detalhes →</div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <div class="pagination-controls">
+              <Button
+                @click="prevPage"
+                :disabled="!pagination.hasPrevPage"
+                variant="outline"
+                class="pagination-btn"
+              >
+                ← Anterior
+              </Button>
+
+              <div class="page-numbers">
+                <button
+                  v-for="page in getVisiblePages()"
+                  :key="page"
+                  @click="goToPage(page)"
+                  :class="['page-number', { active: page === pagination.currentPage }]"
+                  :disabled="page === pagination.currentPage"
+                >
+                  {{ page }}
+                </button>
+              </div>
+
+              <Button
+                @click="nextPage"
+                :disabled="!pagination.hasNextPage"
+                variant="outline"
+                class="pagination-btn"
+              >
+                Próxima →
+              </Button>
+            </div>
+
+            <div class="pagination-info">
+              Página {{ pagination.currentPage }} de {{ pagination.totalPages }} ({{
+                pagination.totalCount
+              }}
+              livros total)
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </Card>
+    </Card>
+  </AppLayout>
 </template>
 
 <style scoped>
-.logo {
-  font-family: 'Whisper', cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 2rem;
-  margin: 0;
-}
-
 .user-info {
   display: flex;
   align-items: center;
