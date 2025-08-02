@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookDetail } from '../composables/useBookDetail'
 import { Button, Card } from '../components'
@@ -7,6 +7,10 @@ import { Button, Card } from '../components'
 const route = useRoute()
 const router = useRouter()
 const { book, isLoading, error, fetchBookByIsbn } = useBookDetail()
+
+const showDeleteConfirm = ref(false)
+const isDeleting = ref(false)
+const deleteError = ref<string | null>(null)
 
 const loadBook = async () => {
   const isbn = route.params.isbn as string
@@ -17,6 +21,42 @@ const loadBook = async () => {
 
 const goBack = () => {
   router.push('/app')
+}
+
+const openDeleteConfirm = () => {
+  showDeleteConfirm.value = true
+  deleteError.value = null
+}
+
+const closeDeleteConfirm = () => {
+  showDeleteConfirm.value = false
+  deleteError.value = null
+}
+
+const handleDeleteBook = async () => {
+  if (!book.value) return
+
+  isDeleting.value = true
+  deleteError.value = null
+
+  try {
+    const { useAuth } = await import('../composables/useAuth')
+    const auth = useAuth()
+
+    const res = await auth.makeAuthenticatedRequest(`/books/${book.value.isbn}`, 'DELETE')
+
+    if (res.success) {
+      // Fechar modal e redirecionar para lista
+      closeDeleteConfirm()
+      router.push('/app')
+    } else {
+      deleteError.value = res.message || 'Erro ao deletar livro'
+    }
+  } catch (err) {
+    deleteError.value = 'Falha ao deletar livro. Tente novamente.'
+  } finally {
+    isDeleting.value = false
+  }
 }
 
 const formatDate = (dateString: string) => {
@@ -48,12 +88,15 @@ watch(
       <div class="header-content">
         <Button @click="goBack" variant="system"> ← Voltar </Button>
         <p class="logo">Book Stack</p>
-        <div v-if="book" class="book-actions">
-          <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
-            Editar Livro
-          </Button>
-          <Button @click="goBack" variant="system"> Voltar à Lista </Button>
-        </div>
+                  <div v-if="book" class="book-actions">
+            <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
+              Editar Livro
+            </Button>
+            <Button @click="openDeleteConfirm" variant="system" class="delete-btn">
+              Deletar Livro
+            </Button>
+            <Button @click="goBack" variant="system"> Voltar à Lista </Button>
+          </div>
       </div>
     </template>
 
@@ -109,6 +152,39 @@ watch(
           visualizá-lo.
         </p>
         <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
+      </div>
+    </div>
+
+    <div v-if="showDeleteConfirm" class="modal-overlay" @click="closeDeleteConfirm">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Confirmar Exclusão</h3>
+          <button @click="closeDeleteConfirm" class="modal-close">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div v-if="deleteError" class="message error-message">
+            {{ deleteError }}
+          </div>
+
+          <p class="confirm-text">
+            Tem certeza que deseja excluir o livro
+            <strong>"{{ book?.name }}"</strong>?
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <Button @click="closeDeleteConfirm" variant="system" :disabled="isDeleting">
+            Cancelar
+          </Button>
+          <Button
+            @click="handleDeleteBook"
+            variant="system"
+            :disabled="isDeleting"
+          >
+            {{ isDeleting ? 'Deletando...' : 'Deletar' }}
+          </Button>
+        </div>
       </div>
     </div>
   </Card>
@@ -284,6 +360,81 @@ watch(
   gap: 1rem;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #374151;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.confirm-text {
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.delete-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .not-found {
   text-align: center;
   padding: 3rem;
@@ -322,6 +473,15 @@ watch(
   }
 
   .book-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-actions {
     flex-direction: column;
     gap: 0.75rem;
   }
