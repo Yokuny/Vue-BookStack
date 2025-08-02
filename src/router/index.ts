@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import App from '../App.vue'
+import AppView from '../views/AppView.vue'
+import AddBookView from '../views/AddBookView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,7 +8,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: App,
+      component: AppView,
+    },
+    {
+      path: '/app',
+      name: 'app',
+      component: AppView,
+    },
+    {
+      path: '/newbook',
+      name: 'addBook',
+      component: AddBookView,
     },
   ],
 })

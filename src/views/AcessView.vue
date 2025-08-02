@@ -39,13 +39,12 @@ const handleSignup = async () => {
 
 const handleGuest = () => {
   currentMode.value = 'guest'
-  console.log('Guest login...')
 }
 </script>
 
 <template>
   <Card>
-    <header class="template-header">
+    <template #header>
       <p class="logo">Book Stack</p>
       <div class="navigation-controls">
         <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
@@ -54,7 +53,7 @@ const handleGuest = () => {
           Visitante
         </Button>
       </div>
-    </header>
+    </template>
 
     <div v-if="currentMode === 'signin'" class="form">
       <div class="form-group form-group-size">
@@ -159,14 +158,6 @@ const handleGuest = () => {
 </template>
 
 <style>
-.template-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  font-size: 2rem;
-}
-
 .form {
   display: flex;
   justify-content: center;

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router'
 import { useAuth } from './composables/useAuth'
 import AcessView from './views/AcessView.vue'
-import AppView from './views/AppView.vue'
+
 const auth = useAuth()
 </script>
 
 <template id="app">
-  <AppView v-if="auth.isAuthenticated.value" />
+  <RouterView v-if="auth.isAuthenticated.value" />
   <AcessView v-else />
 </template>

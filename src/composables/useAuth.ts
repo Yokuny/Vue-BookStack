@@ -75,11 +75,12 @@ export const useAuth = () => {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    clearMessages()
     accessToken.value = null
     isAuthenticated.value = false
     currentUser.value = null
-    clearMessages()
+    await makeAuthenticatedRequest('/auth/logout', 'POST')
   }
 
   const makeAuthenticatedRequest = async (path: string, method: Method = 'GET', body?: object) => {
