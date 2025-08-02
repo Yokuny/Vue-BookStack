@@ -46,16 +46,21 @@ watch(
   <Card>
     <template #header>
       <div class="header-content">
-        <Button @click="goBack" variant="outline" class="back-btn"> ← Voltar </Button>
+        <Button @click="goBack" variant="system"> ← Voltar </Button>
         <p class="logo">Book Stack</p>
-        <div></div>
+        <div v-if="book" class="book-actions">
+          <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
+            Editar Livro
+          </Button>
+          <Button @click="goBack" variant="system"> Voltar à Lista </Button>
+        </div>
       </div>
     </template>
 
     <div class="book-detail-section">
       <div v-if="error" class="message error-message">
         {{ error }}
-        <Button @click="loadBook" variant="primary" class="retry-btn"> Tentar Novamente </Button>
+        <Button @click="loadBook" variant="outline" class="retry-btn"> Tentar Novamente </Button>
       </div>
 
       <div v-if="isLoading" class="loading">
@@ -95,10 +100,6 @@ watch(
             <p class="info-value date-value">{{ formatDate(book.updatedAt) }}</p>
           </div>
         </div>
-
-        <div class="book-actions">
-          <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
-        </div>
       </div>
 
       <div v-else-if="!isLoading && !error" class="not-found">
@@ -128,10 +129,6 @@ watch(
   font-size: 2rem;
   margin: 0;
   text-align: center;
-}
-
-.back-btn {
-  font-weight: 500;
 }
 
 .book-detail-section {
@@ -282,9 +279,9 @@ watch(
 }
 
 .book-actions {
-  text-align: center;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .not-found {
@@ -322,6 +319,11 @@ watch(
 
   .book-info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .book-actions {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
 </style>

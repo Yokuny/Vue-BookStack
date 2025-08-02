@@ -116,9 +116,7 @@ const getVisiblePages = () => {
                 <span class="book-stock">Estoque: {{ book.stock }}</span>
               </p>
             </div>
-            <div class="click-indicator">
-              Clique para ver detalhes →
-            </div>
+            <div class="click-indicator">Clique para ver detalhes →</div>
           </div>
         </div>
 
