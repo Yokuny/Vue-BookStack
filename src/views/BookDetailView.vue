@@ -111,7 +111,17 @@ watch(
 
         <div v-else-if="book" class="book-detail">
           <div class="book-header">
-            <h1 class="book-title">{{ book.name }}</h1>
+            <div class="title-container">
+              <h1 class="book-title">{{ book.name }}</h1>
+              <button
+                v-if="book.isFavorite !== undefined"
+                class="favorite-indicator"
+                :class="{ 'favorite-active': book.isFavorite }"
+                :title="book.isFavorite ? 'Livro favoritado' : 'Livro não favoritado'"
+              >
+                <span class="star-icon">★</span>
+              </button>
+            </div>
             <p class="book-author">por {{ book.author }}</p>
             <div v-if="book.description" class="book-description">
               <p>{{ book.description }}</p>
@@ -270,13 +280,46 @@ watch(
   border-bottom: 2px solid #e5e7eb;
 }
 
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .book-title {
   font-family: 'Whisper', cursive;
   font-size: 3rem;
   font-weight: 400;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   color: #1f2937;
   line-height: 1.2;
+}
+
+.favorite-indicator {
+  background: none;
+  border: none;
+  cursor: default;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.favorite-indicator .star-icon {
+  font-size: 2rem;
+  color: #d1d5db;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.favorite-indicator.favorite-active .star-icon {
+  color: #fbbf24;
 }
 
 .book-author {

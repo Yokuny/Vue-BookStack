@@ -15,6 +15,7 @@ const bookData = ref({
   description: '',
   author: '',
   stock: 0,
+  isFavorite: false,
 })
 
 const isLoading = ref(false)
@@ -39,6 +40,7 @@ const loadBookData = async () => {
         description: book.value.description || '',
         author: book.value.author,
         stock: book.value.stock,
+        isFavorite: book.value.isFavorite || false,
       }
     }
     isLoadingBook.value = false
@@ -165,6 +167,27 @@ onMounted(() => {
                 :disabled="isLoading"
                 @input="clearMessages"
               />
+            </div>
+
+            <div class="input-group input-size">
+              <div class="favorite-container">
+                <button
+                  type="button"
+                  @click="
+                    bookData.isFavorite = !bookData.isFavorite
+                    clearMessages()
+                  "
+                  class="favorite-btn"
+                  :class="{ 'favorite-active': bookData.isFavorite }"
+                  :disabled="isLoading"
+                  :title="bookData.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+                >
+                  <span class="star-icon">★</span>
+                </button>
+                <span class="favorite-status">
+                  {{ bookData.isFavorite ? 'Livro favoritado' : 'Livro não favoritado' }}
+                </span>
+              </div>
             </div>
 
             <Button
@@ -341,6 +364,75 @@ onMounted(() => {
   margin: 0;
 }
 
+.favorite-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.favorite-container:hover {
+  background: #f3f4f6;
+}
+
+.favorite-label {
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
+  min-width: fit-content;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.favorite-btn:hover:not(:disabled) {
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.1);
+}
+
+.favorite-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  color: #d1d5db;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.favorite-btn.favorite-active .star-icon {
+  color: #fbbf24;
+}
+
+.favorite-btn:hover:not(:disabled) .star-icon {
+  color: #fbbf24;
+}
+
+.favorite-status {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+  flex: 1;
+}
+
 @media (max-width: 640px) {
   .book-actions {
     flex-direction: column;
@@ -349,6 +441,15 @@ onMounted(() => {
 
   .form-title {
     font-size: 3rem;
+  }
+
+  .title-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .book-title {
+    font-size: 2.5rem;
   }
 }
 </style>
