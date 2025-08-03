@@ -3,7 +3,17 @@ import { onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookDetail } from '../composables/useBookDetail'
 import { useToast } from '../composables/useToast'
-import { Button, Card, AppLayout, Modal, Loading, DisplayTitle, Heading, Text, Caption } from '../components'
+import {
+  Button,
+  Card,
+  AppLayout,
+  Modal,
+  Loading,
+  DisplayTitle,
+  Heading,
+  Text,
+  Caption,
+} from '../components'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,12 +53,12 @@ const handleDeleteBook = async () => {
 
     const res = await auth.makeAuthenticatedRequest(`/books/${book.value.isbn}`, 'DELETE')
 
-      if (res.success) {
-        closeDeleteConfirm()
-        toast.showSuccess(res.message || 'Livro deletado com sucesso!')
-        setTimeout(() => {
-          router.push('/app')
-        }, 1000)
+    if (res.success) {
+      closeDeleteConfirm()
+      toast.showSuccess(res.message || 'Livro deletado com sucesso!')
+      setTimeout(() => {
+        router.push('/app')
+      }, 1000)
     } else {
       toast.showError(res.message || 'Erro ao deletar livro')
     }

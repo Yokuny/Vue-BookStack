@@ -105,7 +105,8 @@ const getVisiblePages = () => {
           </div>
           <div v-if="searchTerm" class="search-info">
             <Text size="sm" variant="secondary" italic>
-              Buscando por: "<Text tag="strong" size="sm" variant="default">{{ searchTerm }}</Text>"
+              Buscando por: "<Text tag="strong" size="sm" variant="default">{{ searchTerm }}</Text
+              >"
             </Text>
           </div>
         </div>

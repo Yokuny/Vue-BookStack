@@ -242,6 +242,4 @@ onMounted(() => {
   padding: 2rem;
   color: var(--color-text-secondary);
 }
-
-
 </style>
