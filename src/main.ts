@@ -15,7 +15,6 @@ app.use(Vue3Toastify, {
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
-  draggable: true,
   theme: 'light',
 } as ToastContainerOptions)
 

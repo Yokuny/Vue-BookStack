@@ -43,10 +43,12 @@ const handleDeleteBook = async () => {
 
     const res = await auth.makeAuthenticatedRequest(`/books/${book.value.isbn}`, 'DELETE')
 
-    if (res.success) {
-      toast.showSuccess(res.message || 'Livro deletado com sucesso!')
-      closeDeleteConfirm()
-      router.push('/app')
+      if (res.success) {
+        closeDeleteConfirm()
+        toast.showSuccess(res.message || 'Livro deletado com sucesso!')
+        setTimeout(() => {
+          router.push('/app')
+        }, 1000)
     } else {
       toast.showError(res.message || 'Erro ao deletar livro')
     }
