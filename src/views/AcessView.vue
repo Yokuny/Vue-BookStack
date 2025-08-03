@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Card, Button, Switch, AppLayout, Input, DisplayTitle } from '../components'
+import { Card, Button, Switch, AppLayout, Input, DisplayTitle, Loading } from '../components'
 import { useAuth } from '../composables/useAuth'
 import { useSignup } from '../composables/useSignup'
 
@@ -35,8 +35,12 @@ const handleSignup = async () => {
   }
 }
 
-const handleGuest = () => {
+const handleGuest = async () => {
   currentMode.value = 'guest'
+  const success = await auth.createGuestAccount()
+  if (!success) {
+    currentMode.value = 'signin'
+  }
 }
 </script>
 
@@ -126,9 +130,8 @@ const handleGuest = () => {
       </div>
 
       <div v-if="currentMode === 'guest'" class="form">
-        <div>
-          <DisplayTitle tag="h3" size="medium">Carregando...</DisplayTitle>
-          <p>Entrando como visitante...</p>
+        <div class="form-group form-group-size">
+          <Loading message="Estamos criando sua conta de visitante..." />
         </div>
       </div>
     </Card>

@@ -69,6 +69,30 @@ export const useAuth = () => {
     }
   }
 
+  const createGuestAccount = async (): Promise<boolean> => {
+    isLoading.value = true
+
+    try {
+      const res = await requestWithoutAuth('/user/guest', fetchConfig({}, 'POST'))
+
+      if (res.success && res.data?.accessToken) {
+        accessToken.value = res.data.accessToken
+        isAuthenticated.value = true
+        currentUser.value = 'Visitante'
+        toast.showSuccess('Conta de visitante criada e ativada com sucesso!')
+        return true
+      } else {
+        if (res.message) toast.showError(res.message)
+        return false
+      }
+    } catch {
+      toast.showError('Falha ao criar conta de visitante. Tente novamente.')
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const logout = async () => {
     accessToken.value = null
     isAuthenticated.value = false
@@ -108,6 +132,7 @@ export const useAuth = () => {
     accessToken,
     isLoading,
     signin,
+    createGuestAccount,
     logout,
     refreshAccessToken,
     makeAuthenticatedRequest,
