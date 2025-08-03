@@ -1,0 +1,5 @@
+export { default as AppDisplayTitle } from './AppDisplayTitle.vue'
+export { default as AppBrand } from './AppBrand.vue'
+export { default as AppHeading } from './AppHeading.vue'
+export { default as AppText } from './AppText.vue'
+export { default as AppCaption } from './AppCaption.vue'

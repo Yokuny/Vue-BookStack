@@ -1,35 +1,59 @@
 @import './base.css';
 
+input,
+textarea {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem;
+  outline: none;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.input-group label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 #app {
   max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  padding: 1rem 2rem 0 2rem;
 }
 
-a,
-.green {
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: var(--page-background);
+}
+
+a {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  color: var(--color-text);
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
+/* Media query para telas maiores - placeholder para futuras customizações */
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+  /* Estilos para desktop podem ser adicionados aqui */
 }
