@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Card, Button, AppLayout } from '../components'
+import { Card, Button, AppLayout, Input, Textarea } from '../components'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
@@ -52,7 +52,7 @@ const handleAddBook = async () => {
     } else {
       error.value = res.message || 'Erro ao adicionar livro'
     }
-  } catch (err) {
+  } catch {
     error.value = 'Falha ao adicionar livro. Tente novamente.'
   } finally {
     isLoading.value = false
@@ -82,63 +82,61 @@ const handleBack = () => {
             {{ success }}
           </div>
 
-          <div class="input-group input-size">
-            <label>ISBN: *</label>
-            <input
-              v-model="bookData.isbn"
-              type="text"
-              placeholder="Ex: 978-0-123456-47-2"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
+          <Input
+            v-model="bookData.isbn"
+            label="ISBN"
+            type="text"
+            placeholder="Ex: 978-0-123456-47-2"
+            :disabled="isLoading"
+            @input="clearMessages"
+            required
+          />
 
-          <div class="input-group input-size">
-            <label>Nome do Livro: *</label>
-            <input
-              v-model="bookData.name"
-              type="text"
-              placeholder="Digite o nome do livro"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
+          <Input
+            v-model="bookData.name"
+            label="Nome do Livro"
+            type="text"
+            placeholder="Digite o nome do livro"
+            :disabled="isLoading"
+            @input="clearMessages"
+            required
+          />
 
-          <div class="input-group input-size">
-            <label>Autor: *</label>
-            <input
-              v-model="bookData.author"
-              type="text"
-              placeholder="Digite o nome do autor"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
+          <Input
+            v-model="bookData.author"
+            label="Autor"
+            type="text"
+            placeholder="Digite o nome do autor"
+            :disabled="isLoading"
+            @input="clearMessages"
+            required
+          />
 
-          <div class="input-group input-size">
-            <label>Descrição:</label>
-            <textarea
-              v-model="bookData.description"
-              placeholder="Digite uma breve descrição do livro"
-              :disabled="isLoading"
-              @input="clearMessages"
-              rows="4"
-            />
-          </div>
+          <Textarea
+            v-model="bookData.description"
+            label="Descrição"
+            placeholder="Digite uma breve descrição do livro"
+            :disabled="isLoading"
+            @input="clearMessages"
+            :rows="4"
+          />
 
-          <div class="input-group input-size">
-            <label>Estoque:</label>
-            <input
-              v-model.number="bookData.stock"
-              type="number"
-              min="0"
-              placeholder="0"
-              :disabled="isLoading"
-              @input="clearMessages"
-            />
-          </div>
+          <Input
+            v-model="bookData.stock"
+            label="Estoque"
+            type="number"
+            min="0"
+            placeholder="0"
+            :disabled="isLoading"
+            @input="clearMessages"
+          />
 
-          <Button class="input-size" @click="handleAddBook" variant="primary" :disabled="isLoading">
+          <Button
+            style="width: 100%"
+            @click="handleAddBook"
+            variant="primary"
+            :disabled="isLoading"
+          >
             {{ isLoading ? 'Adicionando...' : 'Adicionar Livro' }}
           </Button>
         </div>
@@ -174,16 +172,6 @@ const handleBack = () => {
   width: 100%;
 }
 
-.input-size {
-  width: 100%;
-}
-
-.navigation-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .message {
   padding: 0.75rem;
   border-radius: 0.375rem;
@@ -203,43 +191,5 @@ const handleBack = () => {
   background-color: #f0fdf4;
   color: #16a34a;
   border: 1px solid #bbf7d0;
-}
-
-.input-group input:disabled,
-.input-group textarea:disabled {
-  background-color: #f9fafb;
-  cursor: not-allowed;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.input-group input,
-.input-group textarea {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  width: 100%;
-  transition: border-color 0.2s ease-in-out;
-  font-family: inherit;
-}
-
-.input-group input:focus,
-.input-group textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input-group {
-  margin-bottom: 1rem;
-}
-
-.input-group textarea {
-  resize: vertical;
-  min-height: 100px;
 }
 </style>

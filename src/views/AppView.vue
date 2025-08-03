@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useBooks } from '../composables/useBooks'
-import { Button, Card, AppLayout } from '../components'
+import { Button, Card, AppLayout, Input } from '../components'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -85,15 +85,14 @@ const getVisiblePages = () => {
 
         <div class="search-section">
           <div class="search-container">
-            <input
+            <Input
               v-model="searchTerm"
               type="text"
               placeholder="Buscar por nome, autor, ISBN ou descrição..."
-              class="search-input"
               @keyup.enter="handleSearch"
             />
-            <Button @click="handleSearch" variant="primary" class="search-btn"> Buscar </Button>
-            <Button @click="clearSearch" variant="outline" class="clear-btn"> Limpar </Button>
+            <Button @click="clearSearch" variant="outline"> Limpar </Button>
+            <Button @click="handleSearch" variant="primary"> Buscar </Button>
           </div>
           <div v-if="searchTerm" class="search-info">
             Buscando por: "<strong>{{ searchTerm }}</strong
@@ -111,11 +110,7 @@ const getVisiblePages = () => {
 
         <div v-else-if="books.length === 0" class="no-books">
           <p>Nenhum livro encontrado, adicione mais livros a sua biblioteca.</p>
-          <Button
-            @click="() => router.push('/add-book')"
-            variant="primary"
-            class="add-first-book-btn"
-          >
+          <Button @click="() => router.push('/add-book')" variant="primary">
             Adicionar Primeiro Livro
           </Button>
         </div>
@@ -174,33 +169,23 @@ const getVisiblePages = () => {
 
           <div class="pagination">
             <div class="pagination-controls">
-              <Button
-                @click="prevPage"
-                :disabled="!pagination.hasPrevPage"
-                variant="outline"
-                class="pagination-btn"
-              >
+              <Button @click="prevPage" :disabled="!pagination.hasPrevPage" variant="outline">
                 ← Anterior
               </Button>
 
               <div class="page-numbers">
-                <button
+                <Button
                   v-for="page in getVisiblePages()"
                   :key="page"
                   @click="goToPage(page)"
-                  :class="['page-number', { active: page === pagination.currentPage }]"
+                  :variant="page === pagination.currentPage ? 'primary' : 'outline'"
                   :disabled="page === pagination.currentPage"
                 >
                   {{ page }}
-                </button>
+                </Button>
               </div>
 
-              <Button
-                @click="nextPage"
-                :disabled="!pagination.hasNextPage"
-                variant="outline"
-                class="pagination-btn"
-              >
+              <Button @click="nextPage" :disabled="!pagination.hasNextPage" variant="outline">
                 Próxima →
               </Button>
             </div>
@@ -219,10 +204,30 @@ const getVisiblePages = () => {
 </template>
 
 <style scoped>
-.user-info {
+.search-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+}
+
+.search-container {
   display: flex;
-  align-items: center;
   gap: 1rem;
+  align-items: baseline;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-info {
+  text-align: center;
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.search-info strong {
+  color: #374151;
+  font-weight: 600;
 }
 
 .books-section {
@@ -258,11 +263,12 @@ const getVisiblePages = () => {
 .no-books {
   text-align: center;
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   color: #6b7280;
-}
-
-.add-first-book-btn {
-  margin-top: 1rem;
 }
 
 .books-list {
@@ -435,114 +441,14 @@ const getVisiblePages = () => {
   margin-bottom: 1rem;
 }
 
-.pagination-btn {
-  min-width: 100px;
-  font-weight: 500;
-}
-
 .page-numbers {
   display: flex;
   gap: 0.25rem;
-}
-
-.page-number {
-  min-width: 40px;
-  height: 40px;
-  border: 1px solid #d1d5db;
-  background: white;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.page-number:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.page-number.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.page-number:disabled {
-  cursor: not-allowed;
 }
 
 .pagination-info {
   font-size: 0.875rem;
   color: #6b7280;
   text-align: center;
-}
-
-.search-section {
-  margin-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 2rem;
-}
-
-.search-container {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.search-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border: 2px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  background: #fff;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-input::placeholder {
-  color: #9ca3af;
-}
-
-.search-btn,
-.clear-btn {
-  white-space: nowrap;
-  min-width: 100px;
-}
-
-.search-info {
-  text-align: center;
-  margin-top: 1rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-style: italic;
-}
-
-.search-info strong {
-  color: #374151;
-  font-weight: 600;
-}
-
-@media (max-width: 640px) {
-  .search-container {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .search-input {
-    width: 100%;
-  }
-
-  .search-btn,
-  .clear-btn {
-    width: 100%;
-  }
 }
 </style>

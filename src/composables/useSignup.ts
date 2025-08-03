@@ -58,7 +58,7 @@ export const useSignup = () => {
         if (res.message) error.value = res.message
         return false
       }
-    } catch (err) {
+    } catch {
       error.value = 'Falha ao criar usuário. Tente novamente.'
       return false
     } finally {

@@ -75,7 +75,7 @@ export const useBooks = () => {
       } else {
         error.value = res.message || 'Erro ao carregar livros'
       }
-    } catch (err) {
+    } catch {
       error.value = 'Falha ao carregar livros. Tente novamente.'
     } finally {
       isLoading.value = false

@@ -25,7 +25,7 @@ export const useBookDetail = () => {
       } else {
         error.value = res.message || 'Livro não encontrado'
       }
-    } catch (err) {
+    } catch {
       error.value = 'Falha ao carregar o livro. Tente novamente.'
     } finally {
       isLoading.value = false

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Card, Button, AppLayout } from '../components'
+import { Card, Button, AppLayout, Input, Textarea } from '../components'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { useBookDetail } from '../composables/useBookDetail'
@@ -74,7 +74,7 @@ const handleUpdateBook = async () => {
     } else {
       error.value = res.message || 'Erro ao atualizar livro'
     }
-  } catch (err) {
+  } catch {
     error.value = 'Falha ao atualizar livro. Tente novamente.'
   } finally {
     isLoading.value = false
@@ -115,68 +115,62 @@ onMounted(() => {
               {{ success }}
             </div>
 
-            <div class="input-group input-size">
-              <div style="display: flex; align-items: baseline; gap: 0.5rem">
-                <label>ISBN:</label>
+            <div class="isbn-field input-size">
+              <div class="isbn-header">
+                <label class="isbn-label">ISBN:</label>
                 <p class="isbn-note">O ISBN não pode ser alterado</p>
               </div>
-
               <input class="isbn-value" :value="book.isbn" disabled />
             </div>
 
-            <div class="input-group input-size">
-              <label>Nome do Livro: *</label>
-              <input
-                v-model="bookData.name"
-                type="text"
-                placeholder="Digite o nome do livro"
-                :disabled="isLoading"
-                @input="clearMessages"
-              />
-            </div>
+            <Input
+              v-model="bookData.name"
+              label="Nome do Livro"
+              type="text"
+              placeholder="Digite o nome do livro"
+              :disabled="isLoading"
+              @input="clearMessages"
+              required
+              class="input-size"
+            />
 
-            <div class="input-group input-size">
-              <label>Autor: *</label>
-              <input
-                v-model="bookData.author"
-                type="text"
-                placeholder="Digite o nome do autor"
-                :disabled="isLoading"
-                @input="clearMessages"
-              />
-            </div>
+            <Input
+              v-model="bookData.author"
+              label="Autor"
+              type="text"
+              placeholder="Digite o nome do autor"
+              :disabled="isLoading"
+              @input="clearMessages"
+              required
+              class="input-size"
+            />
 
-            <div class="input-group input-size">
-              <label>Descrição:</label>
-              <textarea
-                v-model="bookData.description"
-                placeholder="Digite uma breve descrição do livro"
-                :disabled="isLoading"
-                @input="clearMessages"
-                rows="4"
-              />
-            </div>
+            <Textarea
+              v-model="bookData.description"
+              label="Descrição"
+              placeholder="Digite uma breve descrição do livro"
+              :disabled="isLoading"
+              @input="clearMessages"
+              :rows="4"
+              class="input-size"
+            />
 
-            <div class="input-group input-size">
-              <label>Estoque:</label>
-              <input
-                v-model.number="bookData.stock"
-                type="number"
-                min="0"
-                placeholder="0"
-                :disabled="isLoading"
-                @input="clearMessages"
-              />
-            </div>
+            <Input
+              v-model="bookData.stock"
+              label="Estoque"
+              type="number"
+              min="0"
+              placeholder="0"
+              :disabled="isLoading"
+              @input="clearMessages"
+              class="input-size"
+            />
 
             <div class="input-group input-size">
               <div class="favorite-container">
                 <button
                   type="button"
-                  @click="
-                    bookData.isFavorite = !bookData.isFavorite
-                    clearMessages()
-                  "
+                  @click="bookData.isFavorite = !bookData.isFavorite"
                   class="favorite-btn"
                   :class="{ 'favorite-active': bookData.isFavorite }"
                   :disabled="isLoading"
@@ -294,42 +288,22 @@ onMounted(() => {
   }
 }
 
-.input-group input:disabled,
-.input-group textarea:disabled {
-  background-color: #f9fafb;
-  cursor: not-allowed;
-}
+/* Estilos removidos - agora usando componentes AppInput e AppTextarea */
 
-.input-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.input-group input,
-.input-group textarea {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  width: 100%;
-  transition: border-color 0.2s ease-in-out;
-  font-family: inherit;
-}
-
-.input-group input:focus,
-.input-group textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input-group {
+.isbn-field {
   margin-bottom: 1rem;
 }
 
-.input-group textarea {
-  resize: vertical;
-  min-height: 100px;
+.isbn-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.isbn-label {
+  font-weight: 500;
+  color: #374151;
 }
 
 .isbn-note {
@@ -337,6 +311,18 @@ onMounted(() => {
   color: #6b7280;
   font-style: italic;
   margin: 0;
+}
+
+.isbn-value {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  width: 100%;
+  background-color: #f9fafb;
+  cursor: not-allowed;
+  color: #6b7280;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
 .error-state {

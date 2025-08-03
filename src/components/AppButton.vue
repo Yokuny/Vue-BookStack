@@ -32,8 +32,9 @@ defineEmits<{
   justify-content: center;
   white-space: nowrap;
   height: 2rem;
-  padding: 1.2rem 1rem;
+  padding: 1.2rem 1.6rem;
   border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -41,16 +42,27 @@ defineEmits<{
 }
 
 .button-outline {
-  background-color: var(--base);
-  border: 1px solid var(--color-border);
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 1.35rem 1.6rem;
+  transition: border-color 0.2s ease-in-out;
 }
 
 .button-outline:hover {
-  background-color: var(--page-background);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.button-outline:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .button-primary {
   border: 1px solid transparent;
+  padding: 1.35rem 1.6rem;
   background-color: var(--page-background);
 }
 
@@ -60,15 +72,14 @@ defineEmits<{
 
 .button-system {
   height: 40px;
-  background: var(--page-background);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-background-mute);
   color: var(--color-text);
   border-radius: 20px;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .button-system:hover {
-  border-color: var(--color-border-hover);
+  background-color: var(--background-secondary);
 }
 </style>

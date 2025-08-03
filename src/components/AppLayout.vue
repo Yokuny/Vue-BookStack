@@ -9,9 +9,6 @@ import Footer from './AppFooter.vue'
       <template #logo>
         <p class="logo">Book Stack</p>
       </template>
-      <template #navigation>
-        <slot name="navigation" />
-      </template>
       <template #actions>
         <slot name="actions" />
       </template>
@@ -37,14 +34,14 @@ import Footer from './AppFooter.vue'
         <div class="footer-links">
           <a href="#" class="footer-link">API Postman</a>
           <a href="#" class="footer-link">API Swagger</a>
-          <a href="#" class="footer-link">Repositório GitHub</a>
+          <a href="#" class="footer-link">GitHub</a>
         </div>
       </template>
       <template #right class="footer-right">
         <div class="footer-links">
           <a href="#" class="footer-link">Testes Coverage</a>
           <a href="#" class="footer-link">Testes Unitários</a>
-          <a href="#" class="footer-link">Testes E2E</a>
+          <a href="#" class="footer-link">Tecnologias Utilizadas</a>
         </div>
       </template>
       <template #bottom>

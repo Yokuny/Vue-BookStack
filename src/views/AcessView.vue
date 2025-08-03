@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Card, Button, Switch, AppLayout } from '../components'
+import { Card, Button, Switch, AppLayout, Input } from '../components'
 import { useAuth } from '../composables/useAuth'
 import { useSignup } from '../composables/useSignup'
 
@@ -44,10 +44,8 @@ const handleGuest = () => {
 
 <template>
   <AppLayout>
-    <template #navigation>
-      <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
-    </template>
     <template #actions>
+      <Switch v-model="isSignup" left-label="Entrar" right-label="Registrar" />
       <Button v-if="currentMode !== 'guest'" @click="handleGuest" variant="system">
         Visitante
       </Button>
@@ -65,25 +63,23 @@ const handleGuest = () => {
             {{ auth.success.value }}
           </div>
 
-          <div class="input-group input-size">
-            <label>Nome:</label>
-            <input
-              v-model="signinData.name"
-              type="text"
-              :disabled="auth.isLoading.value"
-              @input="auth.clearMessages"
-            />
-          </div>
-          <div class="input-group input-size">
-            <label>Senha:</label>
-            <input
-              v-model="signinData.password"
-              type="password"
-              :disabled="auth.isLoading.value"
-              @input="auth.clearMessages"
-              @keyup.enter="handleSignin"
-            />
-          </div>
+          <Input
+            v-model="signinData.name"
+            label="Nome"
+            type="text"
+            :disabled="auth.isLoading.value"
+            @input="auth.clearMessages"
+            class="input-size"
+          />
+          <Input
+            v-model="signinData.password"
+            label="Senha"
+            type="password"
+            :disabled="auth.isLoading.value"
+            @input="auth.clearMessages"
+            @keyup.enter="handleSignin"
+            class="input-size"
+          />
           <Button
             class="input-size"
             @click="handleSignin"
@@ -92,6 +88,10 @@ const handleGuest = () => {
           >
             {{ auth.isLoading.value ? 'Entrando...' : 'Entrar' }}
           </Button>
+          <div>
+            <span> Não tem uma conta? </span>
+            <a class="link-btn" href="#" @click="isSignup = true">Criar conta</a>
+          </div>
         </div>
       </div>
 
@@ -106,34 +106,31 @@ const handleGuest = () => {
             {{ signup.success.value }}
           </div>
 
-          <div class="input-group input-size">
-            <label>Nome:</label>
-            <input
-              v-model="signupData.name"
-              type="text"
-              :disabled="signup.isLoading.value"
-              @input="signup.clearMessages"
-            />
-          </div>
-          <div class="input-group input-size">
-            <label>Senha:</label>
-            <input
-              v-model="signupData.password"
-              type="password"
-              :disabled="signup.isLoading.value"
-              @input="signup.clearMessages"
-            />
-          </div>
-          <div class="input-group input-size">
-            <label>Confirmar Senha:</label>
-            <input
-              v-model="signupData.confirmPassword"
-              type="password"
-              :disabled="signup.isLoading.value"
-              @input="signup.clearMessages"
-              @keyup.enter="handleSignup"
-            />
-          </div>
+          <Input
+            v-model="signupData.name"
+            label="Nome"
+            type="text"
+            :disabled="signup.isLoading.value"
+            @input="signup.clearMessages"
+            class="input-size"
+          />
+          <Input
+            v-model="signupData.password"
+            label="Senha"
+            type="password"
+            :disabled="signup.isLoading.value"
+            @input="signup.clearMessages"
+            class="input-size"
+          />
+          <Input
+            v-model="signupData.confirmPassword"
+            label="Confirmar Senha"
+            type="password"
+            :disabled="signup.isLoading.value"
+            @input="signup.clearMessages"
+            @keyup.enter="handleSignup"
+            class="input-size"
+          />
           <Button
             class="input-size"
             @click="handleSignup"
@@ -142,6 +139,10 @@ const handleGuest = () => {
           >
             {{ signup.isLoading.value ? 'Criando conta...' : 'Criar Conta' }}
           </Button>
+          <div>
+            <span> Já tem uma conta? </span>
+            <a class="link-btn" href="#" @click="isSignup = false">Entrar</a>
+          </div>
         </div>
       </div>
 
@@ -212,28 +213,8 @@ const handleGuest = () => {
   border: 1px solid #bbf7d0;
 }
 
-.input-group input:disabled {
-  background-color: #f9fafb;
-  cursor: not-allowed;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.input-group input {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  width: 100%;
-  transition: border-color 0.2s ease-in-out;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.link-btn {
+  color: var(--color-text);
+  text-decoration: underline;
 }
 </style>

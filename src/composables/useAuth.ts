@@ -67,7 +67,7 @@ export const useAuth = () => {
         if (res.message) error.value = res.message
         return false
       }
-    } catch (err) {
+    } catch {
       error.value = 'Falha ao entrar. Tente novamente.'
       return false
     } finally {

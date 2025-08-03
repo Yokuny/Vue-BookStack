@@ -46,13 +46,12 @@ const handleDeleteBook = async () => {
     const res = await auth.makeAuthenticatedRequest(`/books/${book.value.isbn}`, 'DELETE')
 
     if (res.success) {
-      // Fechar modal e redirecionar para lista
       closeDeleteConfirm()
       router.push('/app')
     } else {
       deleteError.value = res.message || 'Erro ao deletar livro'
     }
-  } catch (err) {
+  } catch {
     deleteError.value = 'Falha ao deletar livro. Tente novamente.'
   } finally {
     isDeleting.value = false

@@ -52,8 +52,7 @@ const toggleSwitch = () => {
   position: relative;
   width: 200px;
   height: 40px;
-  background: var(--color-background-soft);
-  border: 1px solid var(--color-border);
+  background: var(--color-background-mute);
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -63,8 +62,7 @@ const toggleSwitch = () => {
 }
 
 .switch:hover {
-  background: var(--color-background-mute);
-  border-color: var(--color-border-hover);
+  background: var(--background-secondary);
 }
 
 .switch-option {
@@ -72,8 +70,7 @@ const toggleSwitch = () => {
   flex: 1;
   text-align: center;
   color: var(--color-text);
-  opacity: 0.8;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.3s ease;
   z-index: 2;
   padding: 0 10px;
@@ -85,15 +82,13 @@ const toggleSwitch = () => {
   opacity: 1;
   font-weight: 600;
 }
-
 .switch-slider {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(50% - 2px);
-  height: calc(100% - 4px);
-  background: var(--page-background);
-  border: 1px solid var(--color-border-hover);
+  top: 3px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 6px);
+  background: var(--base);
   border-radius: 18px;
   transition: transform 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
