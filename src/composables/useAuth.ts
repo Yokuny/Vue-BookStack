@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import type { Method } from '../utils/fetch.config'
 import { basicRequest, requestWithoutAuth, fetchConfig } from '../utils/fetch.config'
+import { useToast } from './useToast'
 
 export interface SigninData {
   name: string
@@ -18,13 +19,7 @@ const accessToken = ref<string | null>(null)
 
 export const useAuth = () => {
   const isLoading = ref(false)
-  const error = ref<string | null>(null)
-  const success = ref<string | null>(null)
-
-  const clearMessages = () => {
-    error.value = null
-    success.value = null
-  }
+  const toast = useToast()
 
   const refreshAccessToken = async (): Promise<boolean> => {
     try {
@@ -33,26 +28,25 @@ export const useAuth = () => {
       if (res.success && res.data?.accessToken) {
         accessToken.value = res.data.accessToken
         isAuthenticated.value = true
-        if (res.message) success.value = res.message
+        if (res.message) toast.showSuccess(res.message)
         return true
       } else {
-        if (res.message) error.value = res.message
+        if (res.message) toast.showError(res.message)
         return false
       }
     } catch {
-      error.value = 'Não foi possível renovar o acesso. Entre novamente.'
+      toast.showError('Não foi possível renovar o acesso. Entre novamente.')
       return false
     }
   }
 
   const signin = async (data: SigninData): Promise<boolean> => {
     if (!data.name || !data.password) {
-      error.value = 'Por favor, preencha todos os campos'
+      toast.showError('Por favor, preencha todos os campos')
       return false
     }
 
     isLoading.value = true
-    clearMessages()
 
     try {
       const res = await requestWithoutAuth('/auth/signin', fetchConfig(data, 'POST'))
@@ -61,14 +55,14 @@ export const useAuth = () => {
         accessToken.value = res.data.accessToken
         isAuthenticated.value = true
         currentUser.value = data.name
-        if (res.message) success.value = res.message
+        if (res.message) toast.showSuccess(res.message)
         return true
       } else {
-        if (res.message) error.value = res.message
+        if (res.message) toast.showError(res.message)
         return false
       }
     } catch {
-      error.value = 'Falha ao entrar. Tente novamente.'
+      toast.showError('Falha ao entrar. Tente novamente.')
       return false
     } finally {
       isLoading.value = false
@@ -76,7 +70,6 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    clearMessages()
     accessToken.value = null
     isAuthenticated.value = false
     currentUser.value = null
@@ -114,13 +107,10 @@ export const useAuth = () => {
     currentUser,
     accessToken,
     isLoading,
-    error,
-    success,
     signin,
     logout,
     refreshAccessToken,
     makeAuthenticatedRequest,
     checkAuthOnMount,
-    clearMessages,
   }
 }

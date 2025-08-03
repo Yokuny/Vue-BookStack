@@ -1,5 +1,6 @@
 import { ref, onMounted } from 'vue'
 import { useAuth } from './useAuth'
+import { useToast } from './useToast'
 
 export interface Book {
   isbn: string
@@ -29,6 +30,7 @@ export interface BooksResponse {
 
 export const useBooks = () => {
   const auth = useAuth()
+  const toast = useToast()
   const books = ref<Book[]>([])
   const currentSearch = ref('')
   const pagination = ref<BooksPagination>({
@@ -40,15 +42,9 @@ export const useBooks = () => {
     hasPrevPage: false,
   })
   const isLoading = ref(false)
-  const error = ref<string | null>(null)
-
-  const clearError = () => {
-    error.value = null
-  }
 
   const fetchBooks = async (page: number = 1, limit: number = 10, search: string = '') => {
     isLoading.value = true
-    clearError()
 
     try {
       const params = new URLSearchParams({
@@ -73,10 +69,12 @@ export const useBooks = () => {
           search: search,
         }
       } else {
-        error.value = res.message || 'Erro ao carregar livros'
+        const errorMessage = res.message || 'Erro ao carregar livros'
+        toast.showError(errorMessage)
       }
     } catch {
-      error.value = 'Falha ao carregar livros. Tente novamente.'
+      const errorMessage = 'Falha ao carregar livros. Tente novamente.'
+      toast.showError(errorMessage)
     } finally {
       isLoading.value = false
     }
@@ -131,7 +129,8 @@ export const useBooks = () => {
       }
       return res
     } catch (err: any) {
-      error.value = err
+      const errorMessage = 'Erro ao favoritar livro. Tente novamente.'
+      toast.showError(errorMessage)
       throw err
     }
   }
@@ -144,8 +143,6 @@ export const useBooks = () => {
     books,
     pagination,
     isLoading,
-    error,
-    clearError,
     fetchBooks,
     goToPage,
     nextPage,

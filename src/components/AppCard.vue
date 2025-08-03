@@ -16,7 +16,7 @@
   border-radius: 2rem;
   padding: 3rem;
   padding-top: 2rem;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
 }
 

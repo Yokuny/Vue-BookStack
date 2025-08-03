@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Card, Button, AppLayout, Input, Textarea } from '../components'
+import { Card, Button, AppLayout, Input, Textarea, DisplayTitle } from '../components'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
+import { useToast } from '../composables/useToast'
 
 const router = useRouter()
 const auth = useAuth()
+const toast = useToast()
 
 const bookData = ref({
   isbn: '',
@@ -16,28 +18,20 @@ const bookData = ref({
 })
 
 const isLoading = ref(false)
-const error = ref<string | null>(null)
-const success = ref<string | null>(null)
-
-const clearMessages = () => {
-  error.value = null
-  success.value = null
-}
 
 const handleAddBook = async () => {
   if (!bookData.value.isbn || !bookData.value.name || !bookData.value.author) {
-    error.value = 'Por favor, preencha todos os campos obrigatórios'
+    toast.showError('Por favor, preencha todos os campos obrigatórios')
     return
   }
 
   isLoading.value = true
-  clearMessages()
 
   try {
     const res = await auth.makeAuthenticatedRequest('/books', 'POST', bookData.value)
 
     if (res.success) {
-      success.value = res.message || 'Livro adicionado com sucesso!'
+      toast.showSuccess(res.message || 'Livro adicionado com sucesso!')
       bookData.value = {
         isbn: '',
         name: '',
@@ -50,10 +44,10 @@ const handleAddBook = async () => {
         router.push('/')
       }, 1500)
     } else {
-      error.value = res.message || 'Erro ao adicionar livro'
+      toast.showError(res.message || 'Erro ao adicionar livro')
     }
   } catch {
-    error.value = 'Falha ao adicionar livro. Tente novamente.'
+    toast.showError('Falha ao adicionar livro. Tente novamente.')
   } finally {
     isLoading.value = false
   }
@@ -73,14 +67,7 @@ const handleBack = () => {
     <Card>
       <div class="form">
         <div class="form-group form-group-size">
-          <h3 class="form-title">Adicionar Livro</h3>
-
-          <div v-if="error" class="message error-message">
-            {{ error }}
-          </div>
-          <div v-if="success" class="message success-message">
-            {{ success }}
-          </div>
+          <DisplayTitle tag="h3" size="large">Adicionar Livro</DisplayTitle>
 
           <Input
             v-model="bookData.isbn"
@@ -88,7 +75,6 @@ const handleBack = () => {
             type="text"
             placeholder="Ex: 978-0-123456-47-2"
             :disabled="isLoading"
-            @input="clearMessages"
             required
           />
 
@@ -98,7 +84,6 @@ const handleBack = () => {
             type="text"
             placeholder="Digite o nome do livro"
             :disabled="isLoading"
-            @input="clearMessages"
             required
           />
 
@@ -108,7 +93,6 @@ const handleBack = () => {
             type="text"
             placeholder="Digite o nome do autor"
             :disabled="isLoading"
-            @input="clearMessages"
             required
           />
 
@@ -117,7 +101,6 @@ const handleBack = () => {
             label="Descrição"
             placeholder="Digite uma breve descrição do livro"
             :disabled="isLoading"
-            @input="clearMessages"
             :rows="4"
           />
 
@@ -128,7 +111,6 @@ const handleBack = () => {
             min="0"
             placeholder="0"
             :disabled="isLoading"
-            @input="clearMessages"
           />
 
           <Button
@@ -156,40 +138,11 @@ const handleBack = () => {
   padding: 1rem;
 }
 
-.form-title {
-  font-family: 'Whisper', cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 4rem;
-  margin-bottom: 2rem;
-}
-
 .form-group-size {
   display: flex;
   align-items: center;
   flex-direction: column;
   max-width: 500px;
   width: 100%;
-}
-
-.message {
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  text-align: center;
-  font-weight: 500;
-}
-
-.error-message {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-
-.success-message {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
 }
 </style>

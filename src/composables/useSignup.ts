@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { requestWithoutAuth, fetchConfig } from '../utils/fetch.config'
+import { useToast } from './useToast'
 
 export interface SignupData {
   name: string
@@ -8,34 +9,26 @@ export interface SignupData {
 
 export const useSignup = () => {
   const isLoading = ref(false)
-  const error = ref<string | null>(null)
-  const success = ref<string | null>(null)
-
-  const clearMessages = () => {
-    error.value = null
-    success.value = null
-  }
+  const toast = useToast()
 
   const validateSignupData = (data: SignupData, confirmPassword: string): boolean => {
-    clearMessages()
-
     if (!data.name || !data.password || !confirmPassword) {
-      error.value = 'Preencha todos os campos'
+      toast.showError('Preencha todos os campos')
       return false
     }
 
     if (data.name.length < 5) {
-      error.value = 'Nome deve ter no mínimo 5 caracteres'
+      toast.showError('Nome deve ter no mínimo 5 caracteres')
       return false
     }
 
     if (data.password.length < 5) {
-      error.value = 'Senha deve ter no mínimo 5 caracteres'
+      toast.showError('Senha deve ter no mínimo 5 caracteres')
       return false
     }
 
     if (data.password !== confirmPassword) {
-      error.value = 'Senhas devem ser iguais'
+      toast.showError('Senhas devem ser iguais')
       return false
     }
 
@@ -46,20 +39,24 @@ export const useSignup = () => {
     if (!validateSignupData(data, confirmPassword)) return false
 
     isLoading.value = true
-    clearMessages()
 
     try {
       const res = await requestWithoutAuth('/user/signup', fetchConfig(data, 'POST'))
 
       if (res.success) {
-        if (res.message) success.value = res.message
+        if (res.message) {
+          toast.showSuccess(res.message)
+        }
         return true
       } else {
-        if (res.message) error.value = res.message
+        if (res.message) {
+          toast.showError(res.message)
+        }
         return false
       }
     } catch {
-      error.value = 'Falha ao criar usuário. Tente novamente.'
+      const errorMessage = 'Falha ao criar usuário. Tente novamente.'
+      toast.showError(errorMessage)
       return false
     } finally {
       isLoading.value = false
@@ -68,10 +65,7 @@ export const useSignup = () => {
 
   return {
     isLoading,
-    error,
-    success,
     signup,
-    clearMessages,
     validateSignupData,
   }
 }

@@ -91,7 +91,7 @@ const toggleSwitch = () => {
   background: var(--base);
   border-radius: 18px;
   transition: transform 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   z-index: 1;
 }
 

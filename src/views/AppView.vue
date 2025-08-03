@@ -2,7 +2,18 @@
 import { ref } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useBooks } from '../composables/useBooks'
-import { Button, Card, AppLayout, Input } from '../components'
+import {
+  Button,
+  Card,
+  AppLayout,
+  Input,
+  BookList,
+  ControlPanel,
+  Loading,
+  DisplayTitle,
+  Text,
+  Caption,
+} from '../components'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -13,7 +24,6 @@ const {
   books,
   pagination,
   isLoading: booksLoading,
-  error: booksError,
   nextPage,
   prevPage,
   goToPage,
@@ -39,8 +49,7 @@ const clearSearch = () => {
   clearBooksSearch()
 }
 
-const handleToggleFavorite = async (isbn: string, event: Event) => {
-  event.stopPropagation()
+const handleToggleFavorite = async (isbn: string) => {
   try {
     await toggleFavorite(isbn)
   } catch (error) {
@@ -81,7 +90,7 @@ const getVisiblePages = () => {
 
     <Card>
       <div class="books-section">
-        <h3 class="books-title">Meus Livros</h3>
+        <DisplayTitle tag="h3" size="medium">Meus Livros</DisplayTitle>
 
         <div class="search-section">
           <div class="search-container">
@@ -95,18 +104,13 @@ const getVisiblePages = () => {
             <Button @click="handleSearch" variant="primary"> Buscar </Button>
           </div>
           <div v-if="searchTerm" class="search-info">
-            Buscando por: "<strong>{{ searchTerm }}</strong
-            >"
+            <Text size="sm" variant="secondary" italic>
+              Buscando por: "<Text tag="strong" size="sm" variant="default">{{ searchTerm }}</Text>"
+            </Text>
           </div>
         </div>
 
-        <div v-if="booksError" class="message error-message">
-          {{ booksError }}
-        </div>
-
-        <div v-if="booksLoading" class="loading">
-          <p>Carregando livros...</p>
-        </div>
+        <Loading v-if="booksLoading" message="Carregando livros..." />
 
         <div v-else-if="books.length === 0" class="no-books">
           <p>Nenhum livro encontrado, adicione mais livros a sua biblioteca.</p>
@@ -116,7 +120,7 @@ const getVisiblePages = () => {
         </div>
 
         <div v-else class="books-list">
-          <div class="books-controls">
+          <ControlPanel class="books-controls-wrapper">
             <div class="items-per-page">
               <label for="limit-select">Itens por página:</label>
               <select
@@ -134,38 +138,17 @@ const getVisiblePages = () => {
             </div>
 
             <div class="books-info">
-              Mostrando {{ books.length }} de {{ pagination.totalCount }} livros
+              <Caption variant="muted">
+                Mostrando {{ books.length }} de {{ pagination.totalCount }} livros
+              </Caption>
             </div>
-          </div>
+          </ControlPanel>
 
-          <div class="books-grid">
-            <div
-              v-for="book in books"
-              :key="book.isbn"
-              class="book-item"
-              @click="() => router.push(`/book/${book.isbn}`)"
-            >
-              <div class="book-content">
-                <div>
-                  <h4 class="book-name">{{ book.name }}</h4>
-                  <p class="book-author">por {{ book.author }}</p>
-                  <p class="book-details">
-                    <span class="book-isbn">ISBN: {{ book.isbn }}</span>
-                    <span class="book-stock">Estoque: {{ book.stock }}</span>
-                  </p>
-                </div>
-                <button
-                  @click="handleToggleFavorite(book.isbn, $event)"
-                  class="favorite-btn"
-                  :class="{ 'favorite-active': book.isFavorite }"
-                  :title="book.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
-                >
-                  <span class="star-icon">★</span>
-                </button>
-              </div>
-              <div class="click-indicator">Clique para ver detalhes →</div>
-            </div>
-          </div>
+          <BookList
+            :books="books"
+            @book-click="(book) => router.push(`/book/${book.isbn}`)"
+            @toggle-favorite="handleToggleFavorite"
+          />
 
           <div class="pagination">
             <div class="pagination-controls">
@@ -220,14 +203,6 @@ const getVisiblePages = () => {
 .search-info {
   text-align: center;
   margin-top: 1rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-style: italic;
-}
-
-.search-info strong {
-  color: #374151;
-  font-weight: 600;
 }
 
 .books-section {
@@ -235,31 +210,6 @@ const getVisiblePages = () => {
   width: 100%;
 }
 
-.books-title {
-  font-family: 'Whisper', cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 3rem;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.message {
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  text-align: center;
-  font-weight: 500;
-}
-
-.error-message {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-
-.loading,
 .no-books {
   text-align: center;
   padding: 2rem;
@@ -268,7 +218,7 @@ const getVisiblePages = () => {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .books-list {
@@ -276,15 +226,9 @@ const getVisiblePages = () => {
   margin: 0 auto;
 }
 
-.books-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.books-controls-wrapper {
   margin-bottom: 2rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 0.5rem;
-  border: 1px solid #e2e8f0;
+  justify-content: space-between;
 }
 
 .items-per-page {
@@ -295,142 +239,28 @@ const getVisiblePages = () => {
 
 .items-per-page label {
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .limit-select {
   padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.375rem;
-  background: white;
+  background: var(--color-white);
   font-size: 0.875rem;
   cursor: pointer;
 }
 
 .limit-select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.books-info {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.books-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.book-item {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  position: relative;
-}
-
-.book-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.book-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
-}
-
-.book-item:hover .click-indicator {
-  opacity: 1;
-}
-
-.book-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.book-author {
-  font-size: 1rem;
-  color: #6b7280;
-  font-style: italic;
-}
-
-.book-details {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: #4b5563;
-}
-
-.book-isbn,
-.book-stock {
-  font-weight: 500;
-}
-
-.click-indicator {
-  position: absolute;
-  top: 1rem;
-  right: 4rem;
-  background: #3b82f6;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.favorite-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.favorite-btn:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-  transform: scale(1.1);
-}
-
-.star-icon {
-  font-size: 1.5rem;
-  color: #d1d5db;
-  transition: color 0.2s ease;
-  user-select: none;
-}
-
-.favorite-btn.favorite-active .star-icon {
-  color: #fbbf24;
-}
-
-.favorite-btn:hover .star-icon {
-  color: #fbbf24;
+  border-color: var(--color-focus);
+  box-shadow: var(--shadow-focus);
 }
 
 .pagination {
   margin-top: 2rem;
   padding: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-200);
 }
 
 .pagination-controls {
@@ -448,7 +278,7 @@ const getVisiblePages = () => {
 
 .pagination-info {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   text-align: center;
 }
 </style>

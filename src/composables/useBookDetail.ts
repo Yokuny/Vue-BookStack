@@ -1,20 +1,16 @@
 import { ref } from 'vue'
 import { useAuth } from './useAuth'
+import { useToast } from './useToast'
 import type { Book } from './useBooks'
 
 export const useBookDetail = () => {
   const auth = useAuth()
+  const toast = useToast()
   const book = ref<Book | null>(null)
   const isLoading = ref(false)
-  const error = ref<string | null>(null)
-
-  const clearError = () => {
-    error.value = null
-  }
 
   const fetchBookByIsbn = async (isbn: string) => {
     isLoading.value = true
-    clearError()
     book.value = null
 
     try {
@@ -23,10 +19,12 @@ export const useBookDetail = () => {
       if (res.success && res.data) {
         book.value = res.data
       } else {
-        error.value = res.message || 'Livro não encontrado'
+        const errorMessage = res.message || 'Livro não encontrado'
+        toast.showError(errorMessage)
       }
     } catch {
-      error.value = 'Falha ao carregar o livro. Tente novamente.'
+      const errorMessage = 'Falha ao carregar o livro. Tente novamente.'
+      toast.showError(errorMessage)
     } finally {
       isLoading.value = false
     }
@@ -35,8 +33,6 @@ export const useBookDetail = () => {
   return {
     book,
     isLoading,
-    error,
-    clearError,
     fetchBookByIsbn,
   }
 }

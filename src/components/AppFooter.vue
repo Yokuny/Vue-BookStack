@@ -27,7 +27,7 @@
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   padding: 1rem 3rem;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 4px var(--shadow-md);
   border: 1px solid var(--color-border);
 }
 

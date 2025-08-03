@@ -42,22 +42,22 @@ defineEmits<{
 }
 
 .button-outline {
-  background-color: #fff;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  color: var(--color-text);
   padding: 1.35rem 1.6rem;
   transition: border-color 0.2s ease-in-out;
 }
 
 .button-outline:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-focus);
+  box-shadow: var(--shadow-focus);
 }
 
 .button-outline:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-focus);
+  box-shadow: var(--shadow-focus);
 }
 
 .button-primary {

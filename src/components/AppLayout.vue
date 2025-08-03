@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import Header from './AppHeader.vue'
 import Footer from './AppFooter.vue'
+import { Brand, Heading } from './index'
 </script>
 
 <template>
   <div class="app-layout">
     <Header>
       <template #logo>
-        <p class="logo">Book Stack</p>
+        <Brand tag="p">Book Stack</Brand>
       </template>
       <template #actions>
         <slot name="actions" />
@@ -21,7 +22,7 @@ import Footer from './AppFooter.vue'
     <Footer>
       <template #left class="footer-left">
         <div class="footer-links">
-          <h4>BookStack</h4>
+          <Heading tag="h4" size="md" weight="semibold">BookStack</Heading>
           <p>
             Transforme a gestão de livros com BookStack, o aplicativo que encanta leitores e
             organiza coleções com magia! Catalogação intuitiva, busca instantânea e resumos
@@ -52,14 +53,6 @@ import Footer from './AppFooter.vue'
 </template>
 
 <style scoped>
-.logo {
-  color: var(--vt-c-text-light-2);
-  font-family: 'Luckiest Guy', cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 2rem;
-}
-
 .app-layout {
   min-height: 100vh;
   display: flex;
@@ -71,10 +64,6 @@ import Footer from './AppFooter.vue'
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.footer-links h4 {
-  font-weight: 600;
 }
 
 .footer-link {

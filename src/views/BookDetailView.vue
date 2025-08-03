@@ -2,15 +2,16 @@
 import { onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookDetail } from '../composables/useBookDetail'
-import { Button, Card, AppLayout } from '../components'
+import { useToast } from '../composables/useToast'
+import { Button, Card, AppLayout, Modal, Loading, DisplayTitle, Heading, Text, Caption } from '../components'
 
 const route = useRoute()
 const router = useRouter()
-const { book, isLoading, error, fetchBookByIsbn } = useBookDetail()
+const toast = useToast()
+const { book, isLoading, fetchBookByIsbn } = useBookDetail()
 
 const showDeleteConfirm = ref(false)
 const isDeleting = ref(false)
-const deleteError = ref<string | null>(null)
 
 const loadBook = async () => {
   const isbn = route.params.isbn as string
@@ -25,19 +26,16 @@ const goBack = () => {
 
 const openDeleteConfirm = () => {
   showDeleteConfirm.value = true
-  deleteError.value = null
 }
 
 const closeDeleteConfirm = () => {
   showDeleteConfirm.value = false
-  deleteError.value = null
 }
 
 const handleDeleteBook = async () => {
   if (!book.value) return
 
   isDeleting.value = true
-  deleteError.value = null
 
   try {
     const { useAuth } = await import('../composables/useAuth')
@@ -46,13 +44,14 @@ const handleDeleteBook = async () => {
     const res = await auth.makeAuthenticatedRequest(`/books/${book.value.isbn}`, 'DELETE')
 
     if (res.success) {
+      toast.showSuccess(res.message || 'Livro deletado com sucesso!')
       closeDeleteConfirm()
       router.push('/app')
     } else {
-      deleteError.value = res.message || 'Erro ao deletar livro'
+      toast.showError(res.message || 'Erro ao deletar livro')
     }
   } catch {
-    deleteError.value = 'Falha ao deletar livro. Tente novamente.'
+    toast.showError('Falha ao deletar livro. Tente novamente.')
   } finally {
     isDeleting.value = false
   }
@@ -98,20 +97,12 @@ watch(
 
     <Card>
       <div class="book-detail-section">
-        <div v-if="error" class="message error-message">
-          {{ error }}
-          <Button @click="loadBook" variant="outline" class="retry-btn"> Tentar Novamente </Button>
-        </div>
-
-        <div v-if="isLoading" class="loading">
-          <div class="loading-spinner"></div>
-          <p>Carregando detalhes do livro...</p>
-        </div>
+        <Loading v-if="isLoading" message="Carregando detalhes do livro..." />
 
         <div v-else-if="book" class="book-detail">
           <div class="book-header">
             <div class="title-container">
-              <h1 class="book-title">{{ book.name }}</h1>
+              <DisplayTitle tag="h1" size="medium">{{ book.name }}</DisplayTitle>
               <button
                 v-if="book.isFavorite !== undefined"
                 class="favorite-indicator"
@@ -121,96 +112,67 @@ watch(
                 <span class="star-icon">★</span>
               </button>
             </div>
-            <p class="book-author">por {{ book.author }}</p>
-            <div v-if="book.description" class="book-description">
-              <p>{{ book.description }}</p>
-            </div>
+            <Text tag="p" size="lg" variant="secondary" italic>por {{ book.author }}</Text>
+            <Text v-if="book.description" tag="div" size="lg" class="book-description">
+              {{ book.description }}
+            </Text>
           </div>
 
           <div class="book-info-grid">
             <div class="info-card">
-              <h3 class="info-label">ISBN</h3>
-              <p class="info-value">{{ book.isbn }}</p>
+              <Heading tag="h3" size="xs" variant="muted">ISBN</Heading>
+              <Text tag="p" size="xl" weight="bold">{{ book.isbn }}</Text>
             </div>
 
             <div class="info-card">
-              <h3 class="info-label">Estoque</h3>
-              <p class="info-value stock-value" :class="{ 'low-stock': book.stock < 5 }">
+              <Heading tag="h3" size="xs" variant="muted">Estoque</Heading>
+              <Text tag="p" size="xl" weight="bold" :class="{ 'low-stock': book.stock < 5 }">
                 {{ book.stock }} {{ book.stock === 1 ? 'unidade' : 'unidades' }}
-              </p>
+              </Text>
             </div>
 
             <div v-if="book.createdAt" class="info-card">
-              <h3 class="info-label">Data de Cadastro</h3>
-              <p class="info-value date-value">{{ formatDate(book.createdAt) }}</p>
+              <Heading tag="h3" size="xs" variant="muted">Data de Cadastro</Heading>
+              <Text tag="p" size="lg">{{ formatDate(book.createdAt) }}</Text>
             </div>
 
             <div v-if="book.updatedAt && book.updatedAt !== book.createdAt" class="info-card">
-              <h3 class="info-label">Última Atualização</h3>
-              <p class="info-value date-value">{{ formatDate(book.updatedAt) }}</p>
+              <Heading tag="h3" size="xs" variant="muted">Última Atualização</Heading>
+              <Text tag="p" size="lg">{{ formatDate(book.updatedAt) }}</Text>
             </div>
           </div>
         </div>
 
-        <div v-else-if="!isLoading && !error" class="not-found">
-          <h2>Livro não encontrado</h2>
-          <p>
+        <div v-else-if="!isLoading" class="not-found">
+          <Heading tag="h2" size="xl">Livro não encontrado</Heading>
+          <Text tag="p" size="lg">
             O livro com o ISBN fornecido não foi encontrado ou você não tem permissão para
             visualizá-lo.
-          </p>
+          </Text>
           <Button @click="goBack" variant="primary"> Voltar à Lista </Button>
         </div>
       </div>
 
-      <div v-if="showDeleteConfirm" class="modal-overlay" @click="closeDeleteConfirm">
-        <div class="modal-content" @click.stop>
-          <div class="modal-header">
-            <h3>Confirmar Exclusão</h3>
-            <button @click="closeDeleteConfirm" class="modal-close">×</button>
-          </div>
+      <Modal v-model="showDeleteConfirm" title="Confirmar Exclusão" @close="closeDeleteConfirm">
+        <Text tag="p" size="lg">
+          Tem certeza que deseja excluir o livro
+          <Text tag="strong" size="lg" weight="semibold">"{{ book?.name }}"</Text>?
+        </Text>
 
-          <div class="modal-body">
-            <div v-if="deleteError" class="message error-message">
-              {{ deleteError }}
-            </div>
-
-            <p class="confirm-text">
-              Tem certeza que deseja excluir o livro
-              <strong>"{{ book?.name }}"</strong>?
-            </p>
-          </div>
-
-          <div class="modal-actions">
-            <Button @click="closeDeleteConfirm" variant="system" :disabled="isDeleting">
-              Cancelar
-            </Button>
-            <Button @click="handleDeleteBook" variant="system" :disabled="isDeleting">
-              {{ isDeleting ? 'Deletando...' : 'Deletar' }}
-            </Button>
-          </div>
-        </div>
-      </div>
+        <template #actions>
+          <Button @click="closeDeleteConfirm" variant="system" :disabled="isDeleting">
+            Cancelar
+          </Button>
+          <Button @click="handleDeleteBook" variant="system" :disabled="isDeleting">
+            {{ isDeleting ? 'Deletando...' : 'Deletar' }}
+          </Button>
+        </template>
+      </Modal>
     </Card>
   </AppLayout>
 </template>
 
 <style scoped>
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.logo {
-  font-family: 'Whisper', cursive;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 2rem;
-  margin: 0;
-  text-align: center;
-}
-
 .book-detail-section {
   margin-top: 2rem;
   width: 100%;
@@ -219,64 +181,18 @@ watch(
   margin-right: auto;
 }
 
-.message {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.error-message {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-}
-
-.retry-btn {
-  max-width: 200px;
-}
-
-.loading {
-  text-align: center;
-  padding: 3rem;
-  color: #6b7280;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .book-detail {
-  background: #f9fafb;
+  background: var(--color-gray-50);
   border-radius: 1rem;
   padding: 2rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
 }
 
 .book-header {
   text-align: center;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--color-gray-200);
 }
 
 .title-container {
@@ -285,15 +201,6 @@ watch(
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.book-title {
-  font-family: 'Whisper', cursive;
-  font-size: 3rem;
-  font-weight: 400;
-  margin: 0;
-  color: #1f2937;
-  line-height: 1.2;
 }
 
 .favorite-indicator {
@@ -312,36 +219,22 @@ watch(
 
 .favorite-indicator .star-icon {
   font-size: 2rem;
-  color: #d1d5db;
+  color: var(--color-gray-300);
   transition: color 0.2s ease;
   user-select: none;
 }
 
 .favorite-indicator.favorite-active .star-icon {
-  color: #fbbf24;
-}
-
-.book-author {
-  font-size: 1.25rem;
-  color: #6b7280;
-  margin: 0;
-  font-style: italic;
+  color: var(--color-warning);
 }
 
 .book-description {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background: white;
+  background: var(--color-white);
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   text-align: left;
-}
-
-.book-description p {
-  font-size: 1.125rem;
-  line-height: 1.7;
-  color: #374151;
-  margin: 0;
 }
 
 .book-info-grid {
@@ -352,10 +245,10 @@ watch(
 }
 
 .info-card {
-  background: white;
+  background: var(--color-white);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-gray-300);
   text-align: center;
   transition:
     transform 0.2s ease,
@@ -364,31 +257,11 @@ watch(
 
 .info-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
-.info-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6b7280;
-  margin: 0 0 0.75rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.info-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-}
-
-.stock-value.low-stock {
-  color: #dc2626;
-}
-
-.date-value {
-  font-size: 1.125rem;
+.low-stock {
+  color: var(--color-error) !important;
 }
 
 .book-actions {
@@ -397,97 +270,10 @@ watch(
   gap: 1rem;
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 1rem;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0.25rem;
-  line-height: 1;
-}
-
-.modal-close:hover {
-  color: #374151;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.confirm-text {
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-  color: #374151;
-  line-height: 1.6;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.delete-confirm-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .not-found {
   text-align: center;
   padding: 3rem;
-  color: #6b7280;
-}
-
-.not-found h2 {
-  font-size: 1.875rem;
-  margin-bottom: 1rem;
-  color: #374151;
-}
-
-.not-found p {
-  font-size: 1.125rem;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  color: var(--color-text-secondary);
 }
 
 @media (max-width: 640px) {
@@ -495,10 +281,6 @@ watch(
     flex-direction: column;
     gap: 1rem;
     text-align: center;
-  }
-
-  .book-title {
-    font-size: 2rem;
   }
 
   .book-detail {
@@ -510,15 +292,6 @@ watch(
   }
 
   .book-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .modal-overlay {
-    padding: 0.5rem;
-  }
-
-  .modal-actions {
     flex-direction: column;
     gap: 0.75rem;
   }
