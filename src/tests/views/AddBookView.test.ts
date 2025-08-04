@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import AddBookView from '../views/AddBookView.vue'
+import AddBookView from '../../views/AddBookView.vue'
 
 const mockMakeAuthenticatedRequest = vi.fn()
 const mockShowSuccess = vi.fn()
 const mockShowError = vi.fn()
 const mockPush = vi.fn()
 
-vi.mock('../composables/useAuth', () => ({
+vi.mock('../../composables/useAuth', () => ({
   useAuth: () => ({
     makeAuthenticatedRequest: mockMakeAuthenticatedRequest,
   }),
 }))
 
-vi.mock('../composables/useToast', () => ({
+vi.mock('../../composables/useToast', () => ({
   useToast: () => ({
     showSuccess: mockShowSuccess,
     showError: mockShowError,
@@ -26,7 +26,7 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-vi.mock('../components', () => ({
+vi.mock('../../components', () => ({
   Card: {
     template: '<div class="card"><slot /></div>',
   },

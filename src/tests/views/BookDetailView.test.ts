@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
-import BookDetailView from '../views/BookDetailView.vue'
+import BookDetailView from '../../views/BookDetailView.vue'
 
 const mockBook = ref({
   isbn: '1234567890123',
@@ -20,7 +20,7 @@ const mockMakeAuthenticatedRequest = vi.fn()
 const mockPush = vi.fn()
 const mockRoute = { params: { isbn: '1234567890123' } }
 
-vi.mock('../composables/useBookDetail', () => ({
+vi.mock('../../composables/useBookDetail', () => ({
   useBookDetail: () => ({
     book: mockBook,
     isLoading: false,
@@ -28,7 +28,7 @@ vi.mock('../composables/useBookDetail', () => ({
   }),
 }))
 
-vi.mock('../composables/useToast', () => ({
+vi.mock('../../composables/useToast', () => ({
   useToast: () => ({
     showSuccess: mockShowSuccess,
     showError: mockShowError,
@@ -42,13 +42,13 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-vi.mock('../composables/useAuth', () => ({
+vi.mock('../../composables/useAuth', () => ({
   useAuth: () => ({
     makeAuthenticatedRequest: mockMakeAuthenticatedRequest,
   }),
 }))
 
-vi.mock('../components', () => ({
+vi.mock('../../components', () => ({
   Button: { template: '<button class="btn" @click="$emit(\'click\')"><slot /></button>' },
   Card: { template: '<div class="card"><slot /></div>' },
   AppLayout: { template: '<div class="layout"><slot name=\"actions\" /><slot /></div>' },

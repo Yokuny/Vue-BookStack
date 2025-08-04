@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import AcessView from '../views/AcessView.vue'
+import AcessView from '../../views/AcessView.vue'
 
 const mockSignin = vi.fn()
 const mockCreateGuestAccount = vi.fn()
 const mockSignup = vi.fn()
 
-vi.mock('../composables/useAuth', () => ({
+vi.mock('../../composables/useAuth', () => ({
   useAuth: () => ({
     signin: mockSignin,
     createGuestAccount: mockCreateGuestAccount,
@@ -14,14 +14,14 @@ vi.mock('../composables/useAuth', () => ({
   }),
 }))
 
-vi.mock('../composables/useSignup', () => ({
+vi.mock('../../composables/useSignup', () => ({
   useSignup: () => ({
     signup: mockSignup,
     isLoading: { value: false },
   }),
 }))
 
-vi.mock('../components', () => ({
+vi.mock('../../components', () => ({
   Card: {
     template: '<div class="card"><slot /></div>',
   },

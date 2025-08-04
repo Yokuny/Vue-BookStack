@@ -10,13 +10,13 @@ const mockClearSearch = vi.fn()
 const mockToggleFavorite = vi.fn()
 const mockPush = vi.fn()
 
-vi.mock('../composables/useAuth', () => ({
+vi.mock('../../composables/useAuth', () => ({
   useAuth: () => ({
     logout: mockLogout,
   }),
 }))
 
-vi.mock('../composables/useBooks', () => ({
+vi.mock('../../composables/useBooks', () => ({
   useBooks: () => ({
     books: [
       {
@@ -61,7 +61,7 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-vi.mock('../components', () => ({
+vi.mock('../../components', () => ({
   Button: { template: '<div />' },
   Card: { template: '<div />' },
   AppLayout: { template: '<div />' },
