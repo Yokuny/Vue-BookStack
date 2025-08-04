@@ -3,14 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 const mockFetch = vi.fn()
 global.fetch = mockFetch
 
-const originalEnv = import.meta.env
 beforeEach(() => {
   vi.clearAllMocks()
-  import.meta.env = { ...originalEnv }
+  vi.stubEnv('VITE_API_BASE_URL', 'http://localhost:8080')
 })
 
 afterEach(() => {
-  import.meta.env = originalEnv
+  vi.unstubAllEnvs()
 })
 
 describe('fetch.config.ts', () => {

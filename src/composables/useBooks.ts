@@ -33,6 +33,7 @@ export const useBooks = () => {
   const toast = useToast()
   const books = ref<Book[]>([])
   const currentSearch = ref('')
+  const showFavoritesOnly = ref(false)
   const pagination = ref<BooksPagination>({
     currentPage: 1,
     totalPages: 1,
@@ -43,7 +44,12 @@ export const useBooks = () => {
   })
   const isLoading = ref(false)
 
-  const fetchBooks = async (page: number = 1, limit: number = 10, search: string = '') => {
+  const fetchBooks = async (
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    favoritesOnly?: boolean,
+  ) => {
     isLoading.value = true
 
     try {
@@ -53,6 +59,7 @@ export const useBooks = () => {
       })
 
       if (search) params.append('search', search)
+      if (favoritesOnly === true) params.append('favorites', 'true')
 
       const res = await auth.makeAuthenticatedRequest(`/books?${params.toString()}`, 'GET')
 
@@ -82,7 +89,12 @@ export const useBooks = () => {
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= pagination.value.totalPages) {
-      fetchBooks(page, pagination.value.limit, currentSearch.value)
+      fetchBooks(
+        page,
+        pagination.value.limit,
+        currentSearch.value,
+        showFavoritesOnly.value || undefined,
+      )
     }
   }
 
@@ -99,22 +111,32 @@ export const useBooks = () => {
   }
 
   const refreshBooks = () => {
-    fetchBooks(pagination.value.currentPage, pagination.value.limit, currentSearch.value)
+    fetchBooks(
+      pagination.value.currentPage,
+      pagination.value.limit,
+      currentSearch.value,
+      showFavoritesOnly.value || undefined,
+    )
   }
 
   const changeLimit = (newLimit: number) => {
     pagination.value.limit = newLimit
-    fetchBooks(1, newLimit, currentSearch.value)
+    fetchBooks(1, newLimit, currentSearch.value, showFavoritesOnly.value || undefined)
   }
 
   const searchBooks = (searchTerm: string) => {
     currentSearch.value = searchTerm
-    fetchBooks(1, pagination.value.limit, searchTerm)
+    fetchBooks(1, pagination.value.limit, searchTerm, showFavoritesOnly.value || undefined)
   }
 
   const clearSearch = () => {
     currentSearch.value = ''
-    fetchBooks(1, pagination.value.limit, '')
+    fetchBooks(1, pagination.value.limit, '', showFavoritesOnly.value || undefined)
+  }
+
+  const toggleFavoritesFilter = () => {
+    showFavoritesOnly.value = !showFavoritesOnly.value
+    fetchBooks(1, pagination.value.limit, currentSearch.value, showFavoritesOnly.value)
   }
 
   const toggleFavorite = async (isbn: string) => {
@@ -152,6 +174,8 @@ export const useBooks = () => {
     searchBooks,
     clearSearch,
     currentSearch,
+    showFavoritesOnly,
+    toggleFavoritesFilter,
     toggleFavorite,
   }
 }

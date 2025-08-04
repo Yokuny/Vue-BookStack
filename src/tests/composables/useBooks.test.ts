@@ -616,6 +616,112 @@ describe('useBooks', () => {
     })
   })
 
+  describe('Filtro de Favoritos', () => {
+    it('deve iniciar com filtro de favoritos desabilitado', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { showFavoritesOnly } = useBooks()
+
+      expect(showFavoritesOnly.value).toBe(false)
+    })
+
+    it('deve alternar filtro de favoritos', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { toggleFavoritesFilter, showFavoritesOnly } = useBooks()
+
+      expect(showFavoritesOnly.value).toBe(false)
+
+      toggleFavoritesFilter()
+      expect(showFavoritesOnly.value).toBe(true)
+
+      toggleFavoritesFilter()
+      expect(showFavoritesOnly.value).toBe(false)
+    })
+
+    it('deve buscar apenas favoritos quando filtro ativado', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { toggleFavoritesFilter, showFavoritesOnly } = useBooks()
+
+      toggleFavoritesFilter()
+
+      expect(showFavoritesOnly.value).toBe(true)
+      expect(mockMakeAuthenticatedRequest).toHaveBeenCalledWith(
+        '/books?page=1&limit=10&favorites=true',
+        'GET',
+      )
+    })
+
+    it('deve buscar favoritos com termo de pesquisa', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { searchBooks, toggleFavoritesFilter } = useBooks()
+
+      toggleFavoritesFilter()
+      searchBooks('JavaScript')
+
+      expect(mockMakeAuthenticatedRequest).toHaveBeenCalledWith(
+        '/books?page=1&limit=10&search=JavaScript&favorites=true',
+        'GET',
+      )
+    })
+
+    it('deve manter filtro de favoritos ao mudar página', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { toggleFavoritesFilter, goToPage, pagination } = useBooks()
+      pagination.value.totalPages = 5
+
+      toggleFavoritesFilter()
+      goToPage(3)
+
+      expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
+        '/books?page=3&limit=10&favorites=true',
+        'GET',
+      )
+    })
+
+    it('deve manter filtro de favoritos ao alterar limite', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { toggleFavoritesFilter, changeLimit } = useBooks()
+
+      toggleFavoritesFilter()
+      changeLimit(25)
+
+      expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
+        '/books?page=1&limit=25&favorites=true',
+        'GET',
+      )
+    })
+
+    it('deve manter filtro de favoritos ao recarregar', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { toggleFavoritesFilter, refreshBooks, pagination, currentSearch } = useBooks()
+
+      pagination.value.currentPage = 2
+      pagination.value.limit = 15
+      currentSearch.value = 'Vue'
+
+      toggleFavoritesFilter()
+      refreshBooks()
+
+      expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
+        '/books?page=2&limit=15&search=Vue&favorites=true',
+        'GET',
+      )
+    })
+
+    it('deve limpar busca mas manter filtro de favoritos', async () => {
+      const { useBooks } = await import('../../composables/useBooks')
+      const { searchBooks, toggleFavoritesFilter, clearSearch } = useBooks()
+
+      toggleFavoritesFilter()
+      searchBooks('React')
+      clearSearch()
+
+      expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
+        '/books?page=1&limit=10&favorites=true',
+        'GET',
+      )
+    })
+  })
+
   describe('Integração e Fluxos Completos', () => {
     it('deve realizar fluxo completo de busca e paginação', async () => {
       const { useBooks } = await import('../../composables/useBooks')
