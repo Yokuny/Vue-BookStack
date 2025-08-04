@@ -19,3 +19,5 @@ export {
   AppText as Text,
   AppCaption as Caption,
 } from './typography'
+
+export { CleaningIcon, SearchIcon } from './icons'

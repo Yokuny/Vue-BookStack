@@ -13,6 +13,9 @@ import {
   DisplayTitle,
   Text,
   Caption,
+  FavoriteButton,
+  CleaningIcon,
+  SearchIcon,
 } from '../components'
 import { useRouter } from 'vue-router'
 
@@ -30,6 +33,8 @@ const {
   changeLimit,
   searchBooks,
   clearSearch: clearBooksSearch,
+  showFavoritesOnly,
+  toggleFavoritesFilter,
   toggleFavorite,
 } = useBooks()
 
@@ -94,14 +99,25 @@ const getVisiblePages = () => {
 
         <div class="search-section">
           <div class="search-container">
+            <FavoriteButton
+              :isFavorite="showFavoritesOnly"
+              @toggle="toggleFavoritesFilter"
+              :title="showFavoritesOnly ? 'Mostrar todos os livros' : 'Mostrar apenas favoritos'"
+            />
             <Input
               v-model="searchTerm"
               type="text"
               placeholder="Buscar por nome, autor, ISBN ou descrição..."
               @keyup.enter="handleSearch"
             />
-            <Button @click="clearSearch" variant="outline"> Limpar </Button>
-            <Button @click="handleSearch" variant="primary"> Buscar </Button>
+            <Button @click="clearSearch" variant="outline" class="clear-button">
+              <span class="clear-text">Limpar</span>
+              <CleaningIcon class="clear-icon" :size="20" />
+            </Button>
+            <Button @click="handleSearch" variant="primary" class="search-button">
+              <span class="search-text">Buscar</span>
+              <SearchIcon class="search-icon" :size="20" />
+            </Button>
           </div>
           <div v-if="searchTerm" class="search-info">
             <Text size="sm" variant="secondary" italic>
@@ -201,6 +217,28 @@ const getVisiblePages = () => {
   margin: 0 auto;
 }
 
+.filters-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.favorites-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-background-soft);
+  transition: background-color 0.2s ease;
+}
+
+.favorites-filter:hover {
+  background-color: var(--color-background-mute);
+}
+
 .search-info {
   text-align: center;
   margin-top: 1rem;
@@ -281,5 +319,30 @@ const getVisiblePages = () => {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   text-align: center;
+}
+
+.clear-button,
+.search-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    gap: 0.5rem;
+    align-items: start;
+  }
+
+  .clear-button,
+  .search-button {
+    width: 2.5rem;
+    padding: 1.4rem;
+  }
+
+  .clear-text,
+  .search-text {
+    display: none;
+  }
 }
 </style>
