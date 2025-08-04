@@ -126,7 +126,6 @@ describe('AppControlPanel', () => {
       const wrapper = mount(AppControlPanel, {
         props: { hover: null as any },
       })
-      // Quando hover é null, não deve ter a classe hover
       expect(wrapper.find('.control-panel').classes()).not.toContain('control-panel-hover')
     })
 

@@ -4,7 +4,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ../Express-BookStack
+      context: ./Express-BookStack
       dockerfile: Dockerfile
     container_name: bookstack-backend
     restart: unless-stopped
@@ -21,7 +21,7 @@ services:
 
   frontend:
     build:
-      context: .
+      context: ./Vue-BookStack
       dockerfile: Dockerfile
     container_name: bookstack-frontend
     restart: unless-stopped

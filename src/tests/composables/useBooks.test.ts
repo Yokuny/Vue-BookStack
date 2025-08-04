@@ -654,7 +654,7 @@ describe('useBooks', () => {
       const { useBooks } = await import('../../composables/useBooks')
       const { searchBooks, toggleFavoritesFilter } = useBooks()
 
-      toggleFavoritesFilter() // Ativar filtro de favoritos
+      toggleFavoritesFilter()
       searchBooks('JavaScript')
 
       expect(mockMakeAuthenticatedRequest).toHaveBeenCalledWith(
@@ -666,11 +666,9 @@ describe('useBooks', () => {
     it('deve manter filtro de favoritos ao mudar página', async () => {
       const { useBooks } = await import('../../composables/useBooks')
       const { toggleFavoritesFilter, goToPage, pagination } = useBooks()
-
-      // Simular paginação
       pagination.value.totalPages = 5
 
-      toggleFavoritesFilter() // Ativar filtro
+      toggleFavoritesFilter()
       goToPage(3)
 
       expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
@@ -683,7 +681,7 @@ describe('useBooks', () => {
       const { useBooks } = await import('../../composables/useBooks')
       const { toggleFavoritesFilter, changeLimit } = useBooks()
 
-      toggleFavoritesFilter() // Ativar filtro
+      toggleFavoritesFilter()
       changeLimit(25)
 
       expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
@@ -696,12 +694,11 @@ describe('useBooks', () => {
       const { useBooks } = await import('../../composables/useBooks')
       const { toggleFavoritesFilter, refreshBooks, pagination, currentSearch } = useBooks()
 
-      // Simular estado atual
       pagination.value.currentPage = 2
       pagination.value.limit = 15
       currentSearch.value = 'Vue'
 
-      toggleFavoritesFilter() // Ativar filtro
+      toggleFavoritesFilter()
       refreshBooks()
 
       expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
@@ -714,9 +711,9 @@ describe('useBooks', () => {
       const { useBooks } = await import('../../composables/useBooks')
       const { searchBooks, toggleFavoritesFilter, clearSearch } = useBooks()
 
-      toggleFavoritesFilter() // Ativar filtro
-      searchBooks('React') // Buscar com filtro ativo
-      clearSearch() // Limpar busca
+      toggleFavoritesFilter()
+      searchBooks('React')
+      clearSearch()
 
       expect(mockMakeAuthenticatedRequest).toHaveBeenLastCalledWith(
         '/books?page=1&limit=10&favorites=true',
