@@ -39,14 +39,20 @@ import { Brand, Heading } from './index'
             target="_blank"
             >API Postman</a
           >
-          <a href="#" class="footer-link">API Swagger</a>
-          <a href="#" class="footer-link">GitHub</a>
+          <a href="https://github.com/Yokuny/Vue-BookStack" class="footer-link" target="_blank"
+            >GitHub Front-end</a
+          >
+          <a
+            href="https://github.com/Yokuny/Express-BookStack"
+            class="footer-link"
+            target="_blank"
+            >GitHub Back-end</a>
         </div>
       </template>
       <template #right class="footer-right">
         <div class="footer-links">
+          <a href="#" class="footer-link">Swagger API</a>
           <a href="#" class="footer-link">Testes Coverage</a>
-          <a href="#" class="footer-link">Testes Unitários</a>
           <a href="#" class="footer-link">Tecnologias Utilizadas</a>
         </div>
       </template>
