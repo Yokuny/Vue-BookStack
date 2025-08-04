@@ -127,7 +127,6 @@ onMounted(() => {
               placeholder="Digite o nome do livro"
               :disabled="isLoading"
               required
-              class="input-size"
             />
 
             <Input
@@ -137,7 +136,6 @@ onMounted(() => {
               placeholder="Digite o nome do autor"
               :disabled="isLoading"
               required
-              class="input-size"
             />
 
             <Textarea
@@ -146,7 +144,6 @@ onMounted(() => {
               placeholder="Digite uma breve descrição do livro"
               :disabled="isLoading"
               :rows="4"
-              class="input-size"
             />
 
             <Input
@@ -156,10 +153,9 @@ onMounted(() => {
               min="0"
               placeholder="0"
               :disabled="isLoading"
-              class="input-size"
             />
 
-            <div class="input-group input-size">
+            <div class="input-size">
               <ControlPanel>
                 <FavoriteButton
                   :is-favorite="bookData.isFavorite"
@@ -194,28 +190,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.form {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  width: 100%;
-  min-height: 50vh;
-  height: 100%;
-  padding: 1rem;
-}
-
-.form-group-size {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  max-width: 500px;
-  width: 100%;
-}
-
-.input-size {
-  width: 100%;
-}
-
 .isbn-field {
   margin-bottom: 1rem;
 }

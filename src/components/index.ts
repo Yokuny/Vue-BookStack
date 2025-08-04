@@ -12,7 +12,6 @@ export { default as ControlPanel } from './AppControlPanel.vue'
 export { default as FavoriteButton } from './AppFavoriteButton.vue'
 export { default as Loading } from './AppLoading.vue'
 
-// Typography Components
 export {
   AppDisplayTitle as DisplayTitle,
   AppBrand as Brand,

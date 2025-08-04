@@ -127,22 +127,4 @@ const handleBack = () => {
   </AppLayout>
 </template>
 
-<style scoped>
-.form {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  width: 100%;
-  min-height: 50vh;
-  height: 100%;
-  padding: 1rem;
-}
-
-.form-group-size {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  max-width: 500px;
-  width: 100%;
-}
-</style>
+<style scoped></style>

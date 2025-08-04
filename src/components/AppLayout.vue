@@ -15,7 +15,7 @@ import { Brand, Heading } from './index'
       </template>
     </Header>
 
-    <main>
+    <main class="main-content">
       <slot />
     </main>
 
@@ -62,6 +62,13 @@ import { Brand, Heading } from './index'
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
 }
 
 .footer-links {

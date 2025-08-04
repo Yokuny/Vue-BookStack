@@ -97,14 +97,12 @@ const handleGuest = async () => {
             label="Nome"
             type="text"
             :disabled="signup.isLoading.value"
-            class="input-size"
           />
           <Input
             v-model="signupData.password"
             label="Senha"
             type="password"
             :disabled="signup.isLoading.value"
-            class="input-size"
           />
           <Input
             v-model="signupData.confirmPassword"
@@ -112,7 +110,6 @@ const handleGuest = async () => {
             type="password"
             :disabled="signup.isLoading.value"
             @keyup.enter="handleSignup"
-            class="input-size"
           />
           <Button
             class="input-size"
@@ -139,24 +136,6 @@ const handleGuest = async () => {
 </template>
 
 <style>
-.form {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  width: 100%;
-  min-height: 50vh;
-  height: 100%;
-  padding: 1rem;
-}
-
-.form-group-size {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  max-width: 400px;
-  width: 100%;
-}
-
 .input-size {
   width: 100%;
 }
