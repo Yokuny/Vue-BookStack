@@ -16,7 +16,7 @@ services:
 
   backend:
     build:
-      context: ./Express-BookStack
+      context: ../Express-BookStack
       dockerfile: Dockerfile.dev
     container_name: bookstack-backend-dev
     restart: unless-stopped
@@ -33,12 +33,12 @@ services:
     networks:
       - bookstack-network-dev
     volumes:
-      - ./Express-BookStack:/app
+      - ../Express-BookStack:/app
       - /app/node_modules
 
   frontend:
     build:
-      context: ./Vue-BookStack
+      context: .
       dockerfile: Dockerfile
     container_name: bookstack-frontend-dev
     restart: unless-stopped
@@ -51,7 +51,7 @@ services:
     networks:
       - bookstack-network-dev
     volumes:
-      - ./Vue-BookStack:/app
+      - .:/app
       - /app/node_modules
 
 volumes:
