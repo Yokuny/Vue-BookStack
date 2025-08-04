@@ -63,6 +63,7 @@ const handleKeyup = (event: KeyboardEvent) => {
 
 .input-label {
   display: block;
+  font-size: 0.8rem;
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: var(--color-text);

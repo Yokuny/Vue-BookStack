@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Card, Button, Switch, AppLayout, Input, DisplayTitle } from '../components'
+import { Card, Button, Switch, AppLayout, Input, DisplayTitle, Loading } from '../components'
 import { useAuth } from '../composables/useAuth'
 import { useSignup } from '../composables/useSignup'
 
@@ -35,8 +35,12 @@ const handleSignup = async () => {
   }
 }
 
-const handleGuest = () => {
+const handleGuest = async () => {
   currentMode.value = 'guest'
+  const success = await auth.createGuestAccount()
+  if (!success) {
+    currentMode.value = 'signin'
+  }
 }
 </script>
 
@@ -93,14 +97,12 @@ const handleGuest = () => {
             label="Nome"
             type="text"
             :disabled="signup.isLoading.value"
-            class="input-size"
           />
           <Input
             v-model="signupData.password"
             label="Senha"
             type="password"
             :disabled="signup.isLoading.value"
-            class="input-size"
           />
           <Input
             v-model="signupData.confirmPassword"
@@ -108,7 +110,6 @@ const handleGuest = () => {
             type="password"
             :disabled="signup.isLoading.value"
             @keyup.enter="handleSignup"
-            class="input-size"
           />
           <Button
             class="input-size"
@@ -126,9 +127,8 @@ const handleGuest = () => {
       </div>
 
       <div v-if="currentMode === 'guest'" class="form">
-        <div>
-          <DisplayTitle tag="h3" size="medium">Carregando...</DisplayTitle>
-          <p>Entrando como visitante...</p>
+        <div class="form-group form-group-size">
+          <Loading message="Estamos criando sua conta de visitante..." />
         </div>
       </div>
     </Card>
@@ -136,24 +136,6 @@ const handleGuest = () => {
 </template>
 
 <style>
-.form {
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  width: 100%;
-  min-height: 50vh;
-  height: 100%;
-  padding: 1rem;
-}
-
-.form-group-size {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  max-width: 400px;
-  width: 100%;
-}
-
 .input-size {
   width: 100%;
 }

@@ -15,7 +15,7 @@ import { Brand, Heading } from './index'
       </template>
     </Header>
 
-    <main>
+    <main class="main-content">
       <slot />
     </main>
 
@@ -33,7 +33,12 @@ import { Brand, Heading } from './index'
       </template>
       <template #center class="footer-center">
         <div class="footer-links">
-          <a href="#" class="footer-link">API Postman</a>
+          <a
+            href="https://www.postman.com/xyokuny/workspace/yokuny/collection/27814387-3af35dd9-0dc9-4a75-9ca3-8d99dba21260?action=share&creator=27814387"
+            class="footer-link"
+            target="_blank"
+            >API Postman</a
+          >
           <a href="#" class="footer-link">API Swagger</a>
           <a href="#" class="footer-link">GitHub</a>
         </div>
@@ -57,6 +62,13 @@ import { Brand, Heading } from './index'
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
 }
 
 .footer-links {
