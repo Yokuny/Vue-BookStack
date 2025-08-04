@@ -239,10 +239,10 @@ describe('AppLayout', () => {
       const wrapper = mount(AppLayout)
 
       expect(wrapper.text()).toContain('API Postman')
-      expect(wrapper.text()).toContain('API Swagger')
-      expect(wrapper.text()).toContain('GitHub')
+      expect(wrapper.text()).toContain('GitHub Front-end')
+      expect(wrapper.text()).toContain('GitHub Back-end')
+      expect(wrapper.text()).toContain('Swagger API')
       expect(wrapper.text()).toContain('Testes Coverage')
-      expect(wrapper.text()).toContain('Testes Unitários')
       expect(wrapper.text()).toContain('Tecnologias Utilizadas')
     })
 
