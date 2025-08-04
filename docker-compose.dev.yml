@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: bookstack-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: bookstack
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - bookstack-network-dev
+
+  backend:
+    build:
+      context: ../Express-BookStack
+      dockerfile: Dockerfile.dev
+    container_name: bookstack-backend-dev
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongodb:27017/bookstack
+      - PORT=8080
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET:-dev_access_token_secret_key_for_development_only}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-dev_refresh_token_secret_key_for_development_only}
+    depends_on:
+      - mongodb
+    networks:
+      - bookstack-network-dev
+    volumes:
+      - ../Express-BookStack:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookstack-frontend-dev
+    restart: unless-stopped
+    ports:
+      - '5173:5173'
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    depends_on:
+      - backend
+    networks:
+      - bookstack-network-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mongodb_data_dev:
+
+networks:
+  bookstack-network-dev:
+    driver: bridge

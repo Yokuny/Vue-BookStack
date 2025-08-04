@@ -1,0 +1,39 @@
+version: '3.8'
+# Usando MongoDB Atlas
+
+services:
+  backend:
+    build:
+      context: ../Express-BookStack
+      dockerfile: Dockerfile
+    container_name: bookstack-backend
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb+srv://felipevni:POiown1csXvvKwsi@cluster0.duo5icf.mongodb.net/bookstack
+      - PORT=8080
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET:-your_random_string_to_generate_access_token_secret_here_change_this_in_production}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET:-your_random_string_to_generate_refresh_token_secret_here_change_this_in_production}
+    networks:
+      - bookstack-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookstack-frontend
+    restart: unless-stopped
+    ports:
+      - '5173:5173'
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+    depends_on:
+      - backend
+    networks:
+      - bookstack-network
+
+networks:
+  bookstack-network:
+    driver: bridge
