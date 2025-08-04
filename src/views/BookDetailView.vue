@@ -97,11 +97,9 @@ watch(
     <template #actions>
       <div v-if="book" class="book-actions">
         <Button @click="() => router.push(`/book/${book!.isbn}/edit`)" variant="system">
-          Editar Livro
+          Editar
         </Button>
-        <Button @click="openDeleteConfirm" variant="system" class="delete-btn">
-          Deletar Livro
-        </Button>
+        <Button @click="openDeleteConfirm" variant="system" class="delete-btn"> Deletar </Button>
         <Button @click="goBack" variant="system">Voltar</Button>
       </div>
       <Button v-else @click="goBack" variant="system">Voltar</Button>
@@ -186,18 +184,19 @@ watch(
 
 <style scoped>
 .book-detail-section {
-  margin-top: 2rem;
   width: 100%;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
 }
 
 .book-detail {
-  background: var(--color-gray-50);
-  border-radius: 1rem;
+  width: 100%;
+  max-width: 800px;
   padding: 2rem;
-  border: 1px solid var(--color-gray-200);
 }
 
 .book-header {
@@ -256,6 +255,26 @@ watch(
   margin-bottom: 2.5rem;
 }
 
+@media (max-width: 768px) {
+  .book-detail-section {
+    border-radius: 1.6rem;
+  }
+
+  .book-detail {
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem 0.5rem;
+  }
+
+  .book-description {
+    border: 0px solid var(--color-gray-200);
+  }
+
+  .book-info-grid {
+    margin-bottom: 0rem;
+  }
+}
+
 .info-card {
   background: var(--color-white);
   padding: 1.5rem;
@@ -286,26 +305,5 @@ watch(
   text-align: center;
   padding: 3rem;
   color: var(--color-text-secondary);
-}
-
-@media (max-width: 640px) {
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-
-  .book-detail {
-    padding: 1.5rem;
-  }
-
-  .book-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .book-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
 }
 </style>

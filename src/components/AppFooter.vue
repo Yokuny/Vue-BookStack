@@ -31,6 +31,12 @@
   border: 1px solid var(--color-border);
 }
 
+@media (max-width: 768px) {
+  .footer {
+    padding: 1rem 1.4rem;
+  }
+}
+
 .footer-content {
   display: flex;
   justify-content: space-between;
@@ -47,6 +53,13 @@
 .footer-left {
   flex: 2;
   text-align: justify;
+}
+
+@media (max-width: 768px) {
+  .footer-left {
+    flex: 0;
+    display: none;
+  }
 }
 
 .footer-center {

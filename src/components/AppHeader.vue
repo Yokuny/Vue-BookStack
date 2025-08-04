@@ -29,6 +29,12 @@
   border: 1px solid var(--color-border);
 }
 
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem 1.4rem;
+  }
+}
+
 .header-content {
   display: flex;
   justify-content: space-between;
@@ -37,6 +43,11 @@
 
 .header-left {
   flex: 1;
+}
+@media (max-width: 672px) {
+  .header-left {
+    display: none;
+  }
 }
 
 .header-center {

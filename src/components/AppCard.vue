@@ -20,6 +20,12 @@
   border: 1px solid var(--color-border);
 }
 
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1rem;
+  }
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;

@@ -1,11 +1,30 @@
 @import './base.css';
 
-input,
-textarea {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem;
-  outline: none;
+#app {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 2rem 0 2rem;
+}
+
+@media (max-width: 768px) {
+  #app {
+    padding: 1rem 0.6rem;
+  }
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: var(--page-background);
 }
 
 .form {
@@ -32,33 +51,7 @@ textarea {
   width: 100%;
 }
 
-#app {
-  max-width: 1280px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1rem 2rem 0 2rem;
-}
-
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  background-color: var(--page-background);
-}
-
 a {
   text-decoration: none;
   color: var(--color-text);
-}
-
-/* Media query para telas maiores - placeholder para futuras customizações */
-@media (min-width: 1024px) {
-  /* Estilos para desktop podem ser adicionados aqui */
 }
