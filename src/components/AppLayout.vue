@@ -42,11 +42,9 @@ import { Brand, Heading } from './index'
           <a href="https://github.com/Yokuny/Vue-BookStack" class="footer-link" target="_blank"
             >GitHub Front-end</a
           >
-          <a
-            href="https://github.com/Yokuny/Express-BookStack"
-            class="footer-link"
-            target="_blank"
-            >GitHub Back-end</a>
+          <a href="https://github.com/Yokuny/Express-BookStack" class="footer-link" target="_blank"
+            >GitHub Back-end</a
+          >
         </div>
       </template>
       <template #right class="footer-right">
