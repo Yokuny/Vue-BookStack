@@ -445,4 +445,3 @@ CMD ["pnpm", "dev", "--host", "0.0.0.0", "--port", "5173"]
 ---
 
 Este frontend demonstra **domínio técnico** em Vue.js moderno, arquitetura de componentes, gestão de estado reativo e experiência do usuário, características essenciais para aplicações frontend robustas. 🌟
-
